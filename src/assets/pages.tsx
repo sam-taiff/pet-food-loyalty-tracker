@@ -31,6 +31,7 @@ export const SideNavBar = () => {
                         <a><button>View Database</button></a>
                         <a title="Brands Page" href="/brands"><button>Manage Brands</button></a>
                         <a><button>New Purchase</button></a>
+                        <a href="/profile"><button>Temp: Profile</button></a>
                     </td>
                     <td id="main-area">
                         <Routes>

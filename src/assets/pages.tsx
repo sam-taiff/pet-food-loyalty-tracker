@@ -10,7 +10,7 @@ import {
 const lorem:string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lectus dui, rutrum sit amet nibh et, consectetur consequat metus. Nunc ultricies enim nec suscipit mollis. Praesent hendrerit, neque nec porta semper, sem tellus venenatis mi, vel sollicitudin tortor elit in libero. Etiam vitae enim eu velit aliquam fringilla. Mauris eleifend ante nisi, sit amet imperdiet purus sodales vitae. Ut posuere rhoncus quam nec dapibus. Proin ullamcorper mauris et lorem dignissim vehicula vitae mattis orci. In eu pulvinar ex. Curabitur euismod tellus quis enim condimentum vehicula. Fusce ac placerat nisi, in ultrices elit. Nulla fringilla ultrices eros, ut dictum felis luctus in. Donec pulvinar tempor felis, sit amet dignissim metus. Maecenas lectus erat, tempor vitae turpis vel, vulputate ultrices nisi."
 
 //Navigation Bar
-export const NavBar = () => {
+export const TopNavBar = () => {
     return (
         <div>
             <div className='topbar'>
@@ -21,6 +21,25 @@ export const NavBar = () => {
             </div>
             <hr/>
         </div>
+    )
+}
+
+export const SideNavBar = () => {
+    return (
+        <table >
+          <tbody>
+            <tr>
+              <td id="sidenav">
+                <button>this is a button</button>
+                <button>this is a button</button>
+                <button>this is a button</button><button>this is a button</button><button>this is a button</button>
+              </td>
+              <td id="main-area">
+                main page content
+              </td>
+            </tr>
+          </tbody>
+        </table>
     )
 }
 
@@ -53,11 +72,12 @@ export const Homepage = () => (
 );
 
 //Profile Page
-export const Profile = () => {
-    const variable = 3;
+export const Profilepage = () => {
+    const name = "Johnathan Smith";
+    const phone = "0221719175";
     return (
         <div>
-            <h1>{variable}</h1>
+            <h1>{name} | {phone}</h1>
             <Outlet />
         </div>
     );

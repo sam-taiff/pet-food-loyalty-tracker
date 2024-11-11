@@ -8,22 +8,26 @@ import {
 } from "react-router-dom";
 import {
   Homepage,
-  NavBar,
+  TopNavBar,
+  SideNavBar,
   Brandpage,
-  Databasepage
+  Databasepage,
+  Profilepage
 } from './assets/pages';
 
 function App() {
   return (
     <>
       <Router>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Homepage />} />
-          <Route path="/brands" element={<Brandpage />} />
-          <Route path="/database" element={<Databasepage />} />
-        </Routes>
-      </Router>
+        <TopNavBar />
+        <SideNavBar />
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+        <Route path="/brands" element={<Brandpage />} />
+        <Route path="/database" element={<Databasepage />} />
+        <Route path="/profile" element={<Profilepage />} />
+      </Routes>
+    </Router >
     </>
   )
 }

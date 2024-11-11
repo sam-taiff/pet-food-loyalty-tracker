@@ -72,10 +72,11 @@ a {
   padding:0.5rem;
   text-align: center;
   margin: 8pt 0pt;
+  outline: 2px solid var(--charcoal);
 }
 
 #search-input:focus {
-  outline: 2px solid var(--charcoal);
+  outline: 3px solid var(--saffron);
 }
 
 /*Horizontal Menu Display*/

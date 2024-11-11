@@ -9,6 +9,7 @@
     "strict": true,
     "noImplicitAny": true,
     "noEmit": true,
-    "allowImportingTsExtensions":true
+    "allowImportingTsExtensions":true,
+    "lib": [ "es2015", "dom" ]
   }
 }

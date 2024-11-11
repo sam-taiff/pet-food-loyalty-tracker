@@ -1,0 +1,134 @@
+@import './assets/fonts.css';
+/* Color Scheme 1
+Charcoal: #264653,
+Persian Green: #2a9d8f,
+Saffron: #e9c46a,
+Sandy Brown: #f4a261,
+Burnt Sienna: #e76f51 */
+
+:root {
+  --white: whitesmoke;
+  --charcoal: #264653;
+  --green: #2a9d8f;
+  --saffron: #e9c46a;
+  --brown: #f4a261;
+  --sienna: #e76f51;
+  --title: small-caps bolder 3.2em "Concert One", sans-serif;
+  font: 12pt "Open Sans", sans-serif;
+  text-rendering: optimizeLegibility;
+  background-color: var(--white);
+  color: var(--charcoal);
+  text-align: center;
+}
+
+h1 {
+  line-height: 1.1;
+  font: var(--title);
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: none;
+  display: flex;
+}
+
+a:hover {
+  color: #535bf2;
+}
+
+.topbar {
+  min-height: 5vh;
+  padding: 1rem;
+  display: flex;
+  font: var(--title);
+  font-size: 1.5em;
+  color: var(--white);
+}
+
+.topbar.item {
+  padding: 0rem 1rem;
+  color: var(--charcoal);
+  align-content: stretch;
+  vertical-align: middle;
+}
+
+#logo {
+  height: 1.75em;
+  padding: 0;
+}
+
+#search-input {
+  width: max-content;
+  font-size: 2em;
+  border-color: transparent;
+  border-radius: 24px;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+#search-input:focus {
+  outline: 2px solid var(--sienna);
+}
+
+/*Horizontal Menu Display*/
+#main-menu,
+#due-view {
+  display: flex;
+  max-width: 75vw;
+  min-width: 50vw;
+  margin: 10px auto;
+}
+
+#main-menu {
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  justify-items: stretch;
+}
+
+#main-menu button {
+  border: 5px solid var(--saffron);
+  border-radius: 12px;
+  padding: 0.6em 1.2em;
+  color: var(--charcoal);
+  font-size: 1.25em;
+  font-weight: 550;
+  font-family: "Concert One";
+  background-color: var(--white);
+  cursor: pointer;
+  transition: border-color, background-color 0.1s;
+  margin: 0.5rem;
+  min-width: 10em;
+}
+
+#main-menu button:hover,
+#main-menu button:active {
+  background-color: var(--saffron);
+}
+
+#main-menu button:active {
+  box-shadow: inset;
+}
+
+#main-menu,
+#due-view,
+#filter-due,
+#due-cards {
+  border: 1px solid var(--sienna);
+}
+
+#filter-due,
+#due-cards {
+  padding: 5px 10px;
+  vertical-align: auto;
+  display: inline-block;
+}
+
+#filter-due {
+  width: 30%;
+  text-align: left;
+}
+
+#due-cards {
+  width: 70%;
+}

@@ -13,7 +13,6 @@ Burnt Sienna: #e76f51 */
   --saffron: #e9c46a;
   --brown: #f4a261;
   --sienna: #e76f51;
-  --title: small-caps bolder 3.2em "Concert One", sans-serif;
   font: 12pt "Open Sans", sans-serif;
   text-rendering: optimizeLegibility;
   background-color: var(--white);
@@ -23,7 +22,7 @@ Burnt Sienna: #e76f51 */
 
 h1 {
   line-height: 1.1;
-  font: var(--title);
+  font: small-caps bolder 3.2em "Concert One", sans-serif;
 }
 
 hr {
@@ -41,7 +40,7 @@ a {
   min-height: 5vh;
   padding: 1rem 1rem 0rem 1rem;
   display: flex;
-  font: var(--title);
+  font: small-caps bolder 3.2em "Concert One", sans-serif;
   font-size: 1.5em;
   color: var(--white);
 }
@@ -70,12 +69,13 @@ a {
   font-size: 2em;
   border-color: transparent;
   border-radius: 24px;
-  padding: 6px;
+  padding:0.5rem;
   text-align: center;
+  margin: 8pt 0pt;
 }
 
 #search-input:focus {
-  outline: 2px solid var(--sienna);
+  outline: 2px solid var(--charcoal);
 }
 
 /*Horizontal Menu Display*/
@@ -84,6 +84,7 @@ a {
   justify-content: space-evenly;
   flex-wrap: wrap;
   justify-items: stretch;
+  padding: 8pt 0pt;
 }
 
 #main-menu button {
@@ -112,13 +113,14 @@ a {
 
 #due-view {
   display: flex;
+  vertical-align: top;
 }
 
 #filter-due,
 #due-cards {
   padding: 5px 10px;
   vertical-align: auto;
-  display: inline-block;
+  word-wrap: break-word;
 }
 
 #filter-due {
@@ -132,5 +134,5 @@ a {
 
 /*DEV ONLY*/
 #main-menu, #due-view, #filter-due, #due-cards, .page {
-  border: 1px solid var(--sienna);
+  border: 1px solid transparent;
 }

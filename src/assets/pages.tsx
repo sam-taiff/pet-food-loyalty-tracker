@@ -1,32 +1,29 @@
-import React from 'react';
 import '../master.css';
 import './brandSVG.tsx';
 import logo from './sparrow.png';
 import {
-    Home
-} from "flowbite-react-icons/solid";
-import {
-    BarsFromLeft
-} from "flowbite-react-icons/outline";
-import {
     Outlet,
-    Link,
-    useHref
+    Link
 } from "react-router-dom";
 
 //Navigation Bar
 export const NavBar = () => {
     return (
-        <div className='topbar'>
-            <img src={logo} id="logo" />
-            <a title="Back to Homepage" href='/'><span className='topbar item'>Loyalty Card Tracking</span></a>
+        <div>
+            <div className='topbar'>
+                <img src={logo} id="logo" />
+                <a title="Back to Homepage" href='/'>
+                    <span className='topbar item'>Loyalty Card Tracking</span>
+                </a>
+            </div>
+            <hr/>
         </div>
     )
 }
 
 //Home Page
 export const Homepage = () => (
-    <div>
+    <div className='page'>
         <search>
             <form>
                 <input

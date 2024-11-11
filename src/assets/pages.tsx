@@ -1,14 +1,11 @@
 import '../master.css';
 import './brandSVG.tsx';
 import logo from './sparrow.png';
-import {
-    Outlet,
-    Link
-} from "react-router-dom";
+import { Route, Routes } from 'react-router-dom';
 
 //placeholder text (DEV USE ONLY)
-const lorem:string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lectus dui, rutrum sit amet nibh et, consectetur consequat metus. Nunc ultricies enim nec suscipit mollis. Praesent hendrerit, neque nec porta semper, sem tellus venenatis mi, vel sollicitudin tortor elit in libero. Etiam vitae enim eu velit aliquam fringilla. Mauris eleifend ante nisi, sit amet imperdiet purus sodales vitae. Ut posuere rhoncus quam nec dapibus. Proin ullamcorper mauris et lorem dignissim vehicula vitae mattis orci. In eu pulvinar ex. Curabitur euismod tellus quis enim condimentum vehicula. Fusce ac placerat nisi, in ultrices elit. Nulla fringilla ultrices eros, ut dictum felis luctus in. Donec pulvinar tempor felis, sit amet dignissim metus. Maecenas lectus erat, tempor vitae turpis vel, vulputate ultrices nisi."
-
+const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lectus dui, rutrum sit amet nibh et, consectetur consequat metus. Nunc ultricies enim nec suscipit mollis. Praesent hendrerit, neque nec porta semper, sem tellus venenatis mi, vel sollicitudin tortor elit in libero. Etiam vitae enim eu velit aliquam fringilla. Mauris eleifend ante nisi, sit amet imperdiet purus sodales vitae. Ut posuere rhoncus quam nec dapibus. Proin ullamcorper mauris et lorem dignissim vehicula vitae mattis orci. In eu pulvinar ex. Curabitur euismod tellus quis enim condimentum vehicula. Fusce ac placerat nisi, in ultrices elit. Nulla fringilla ultrices eros, ut dictum felis luctus in. Donec pulvinar tempor felis, sit amet dignissim metus. Maecenas lectus erat, tempor vitae turpis vel, vulputate ultrices nisi."
+const currentcust = [];
 //Navigation Bar
 export const TopNavBar = () => {
     return (
@@ -16,10 +13,10 @@ export const TopNavBar = () => {
             <div className='topbar'>
                 <img src={logo} id="logo" />
                 <a title="Back to Homepage" href='/'>
-                    <span className='topbar item'>Loyalty Card Tracking</span>
-                </a>
+                    <span className='topbar item'>Loyalty Card Tracking</span></a>
+                <span className='topbar item' id="cust-name">Full Name | Phone Number</span>
             </div>
-            <hr/>
+            <hr />
         </div>
     )
 }
@@ -27,18 +24,24 @@ export const TopNavBar = () => {
 export const SideNavBar = () => {
     return (
         <table >
-          <tbody>
-            <tr>
-              <td id="sidenav">
-                <button>this is a button</button>
-                <button>this is a button</button>
-                <button>this is a button</button><button>this is a button</button><button>this is a button</button>
-              </td>
-              <td id="main-area">
-                main page content
-              </td>
-            </tr>
-          </tbody>
+            <tbody>
+                <tr>
+                    <td id="sidenav">
+                        <a title="Loyalty Card Tracking Home" href="/"><button>Home</button></a>
+                        <a><button>View Database</button></a>
+                        <a title="Brands Page" href="/brands"><button>Manage Brands</button></a>
+                        <a><button>New Purchase</button></a>
+                    </td>
+                    <td id="main-area">
+                        <Routes>
+                            <Route path="/" element={<Homepage />} />
+                            <Route path="/brands" element={<Brandpage />} />
+                            <Route path="/database" element={<Databasepage />} />
+                            <Route path="/profile" element={<Profilepage />} />
+                        </Routes>
+                    </td>
+                </tr>
+            </tbody>
         </table>
     )
 }
@@ -55,15 +58,10 @@ export const Homepage = () => (
                     id="search-input"
                     name="cust-search"
                     spellCheck="false"
-                    placeholder='Search Customer'
+                    placeholder='Customer Search'
                 />
             </form>
         </search>
-        <div id="main-menu"> {/* main menu action buttons */}
-            <a><button>View Database</button></a>
-            <a title="Brands Page" href="/brands"><button>Manage Brands</button></a>
-            <a><button>New Purchase</button></a>
-        </div>
         <div id="due-view"> {/* viewport of all "due cards" */}
             <div id="filter-due">{lorem}</div>
             <div id="due-cards">{lorem}</div>
@@ -73,12 +71,9 @@ export const Homepage = () => (
 
 //Profile Page
 export const Profilepage = () => {
-    const name = "Johnathan Smith";
-    const phone = "0221719175";
     return (
         <div>
-            <h1>{name} | {phone}</h1>
-            <Outlet />
+            bing bong
         </div>
     );
 };

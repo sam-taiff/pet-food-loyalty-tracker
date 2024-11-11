@@ -21,13 +21,7 @@ function App() {
       <Router>
         <TopNavBar />
         <SideNavBar />
-      <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/brands" element={<Brandpage />} />
-        <Route path="/database" element={<Databasepage />} />
-        <Route path="/profile" element={<Profilepage />} />
-      </Routes>
-    </Router >
+      </Router >
     </>
   )
 }

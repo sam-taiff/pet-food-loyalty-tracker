@@ -1,1 +1,1 @@
-# pet-food-loyalty-tracker
+Pet Food Loyalty Tracker

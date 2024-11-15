@@ -13,7 +13,7 @@ Burnt Sienna: #e76f51 */
   --saffron: #e9c46a;
   --brown: #f4a261;
   --sienna: #e76f51;
-  font: 12pt "Open Sans", sans-serif;
+  font: 12pt "Open Sans", Arial;
   text-rendering: optimizeLegibility;
   background-color: var(--white);
   color: var(--charcoal);
@@ -21,21 +21,26 @@ Burnt Sienna: #e76f51 */
 }
 
 table,
-tr,
-td {
+tr {
   border-collapse: collapse;
   border: 1px solid transparent;
   width: 100%;
   vertical-align: top;
 }
 
+td {
+  border-collapse: collapse;
+  border: 1px solid var(--green);
+}
+
 h1 {
-  font: small-caps 1.75em "Concert One", sans-serif;
+  font: small-caps 2em "Concert One", sans-serif;
+  color: var(--green);
 }
 
 hr {
   width: 100%;
-  height: 3px;
+  height: 2px;
   border: none;
   background-color: var(--charcoal);
 }
@@ -50,13 +55,13 @@ a:visited {
   min-height: 5vh;
   padding: 1rem 1rem 0rem 1rem;
   display: flex;
+  align-items: space-evenly;
   font: small-caps bolder 3.2em "Concert One", sans-serif;
   font-size: 1.5em;
 }
 
 .topbar.item {
   padding: 0rem 1rem;
-  align-content: stretch;
   vertical-align: middle;
 }
 
@@ -148,5 +153,10 @@ a:visited {
 }
 
 #cust-name {
-  color: var(sienna);
+  color: var(--sienna);
+}
+
+.message-screen{
+  color: var(--sienna);
+  font: small-caps 1.75em "Concert One", sans-serif;
 }

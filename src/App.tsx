@@ -8,18 +8,19 @@ import {
 } from "react-router-dom";
 import {
   Homepage,
-  TopNavBar,
+  TopBar,
   SideNavBar,
   Brandpage,
   Databasepage,
-  Profilepage
+  Profilepage,
+  PageProps
 } from './assets/pages';
 
 function App() {
   return (
     <>
       <Router>
-        <TopNavBar />
+        <TopBar pageName={} />
         <SideNavBar />
       </Router >
     </>

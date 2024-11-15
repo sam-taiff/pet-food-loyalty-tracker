@@ -1,17 +1,14 @@
 import '../master.css';
-import './brandSVG.tsx';
+import { hills } from './brandSVG.tsx';
 import logo from './sparrow.png';
 import { Route, Routes } from 'react-router-dom';
-import TableComponent from './table-component.tsx';
+import { TableComponent } from './view-components.tsx';
 
 //placeholder text (DEV USE ONLY)
 const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lectus dui, rutrum sit amet nibh et, consectetur consequat metus. Nunc ultricies enim nec suscipit mollis. Praesent hendrerit, neque nec porta semper, sem tellus venenatis mi, vel sollicitudin tortor elit in libero. Etiam vitae enim eu velit aliquam fringilla. Mauris eleifend ante nisi, sit amet imperdiet purus sodales vitae. Ut posuere rhoncus quam nec dapibus. Proin ullamcorper mauris et lorem dignissim vehicula vitae mattis orci. In eu pulvinar ex. Curabitur euismod tellus quis enim condimentum vehicula. Fusce ac placerat nisi, in ultrices elit. Nulla fringilla ultrices eros, ut dictum felis luctus in. Donec pulvinar tempor felis, sit amet dignissim metus. Maecenas lectus erat, tempor vitae turpis vel, vulputate ultrices nisi."
 //Navigation Bar
-export interface PageProps {
-    pageName: string;
-}
-
-export const TopBar = ({ pageName }: PageProps) => {
+export const TopBar = () => {
+    const pageName = "";
     return (
         <div>
             <div className='topbar'>
@@ -37,13 +34,15 @@ export const SideNavBar = () => {
                         <a title="Brands Page" href="/brands"><button>Manage Brands</button></a>
                         <a><button>New Purchase</button></a>
                         <a href="/profile"><button>Temp: Profile</button></a>
+                        <a href="/build"><button>Temp: Builder</button></a>
                     </td>
                     <td id="main-area">
                         <Routes>
-                            <Route path="/" element={<Homepage pageName="Home"/>} />
+                            <Route path="/" element={<Homepage />} />
                             <Route path="/brands" element={<Brandpage />} />
                             <Route path="/database" element={<Databasepage />} />
                             <Route path="/profile" element={<Profilepage />} />
+                            <Route path="/build" element={<Buildingpage />} />
                         </Routes>
                     </td>
                 </tr>
@@ -53,8 +52,7 @@ export const SideNavBar = () => {
 }
 
 //Home Page
-export const Homepage = ({ pageName }: PageProps) => {
-    pageName = "Home2"
+export const Homepage = () => {
     return (
         <div className='page'>
             <search>
@@ -112,3 +110,24 @@ export const Databasepage = () => {
         </>
     );
 };
+
+const Buildingpage = () => (
+    <>
+        <h1>builderpage</h1>
+        <table>
+            <tr>
+                <td id="brand-logo">
+                    <img src={hills} />
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </>
+);

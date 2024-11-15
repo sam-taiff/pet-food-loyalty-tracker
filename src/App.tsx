@@ -13,14 +13,13 @@ import {
   Brandpage,
   Databasepage,
   Profilepage,
-  PageProps
 } from './assets/pages';
 
 function App() {
   return (
     <>
       <Router>
-        <TopBar pageName={} />
+        <TopBar />
         <SideNavBar />
       </Router >
     </>

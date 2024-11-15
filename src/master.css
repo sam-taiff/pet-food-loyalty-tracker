@@ -28,14 +28,21 @@ tr {
   vertical-align: top;
 }
 
-td {
+td,
+th {
   border-collapse: collapse;
-  border: 1px solid var(--green);
+  border: 1px solid var(--brown);
+  width: fit-content;
 }
 
 h1 {
   font: small-caps 2em "Concert One", sans-serif;
   color: var(--green);
+}
+
+th {
+  font: small-caps 1.5em "Concert One", sans-serif;
+  color: var(--sienna);
 }
 
 hr {
@@ -156,7 +163,7 @@ a:visited {
   color: var(--sienna);
 }
 
-.message-screen{
+.message-screen {
   color: var(--sienna);
   font: small-caps 1.75em "Concert One", sans-serif;
 }

@@ -56,7 +56,7 @@ export const TableComponent: React.FC<TableProps> = ({ tableName }) => {
     fetchData();
   }, [tableName]);
 
-  if (loading) return <p className="loader" />;
+  if (loading) return <p className='message-screen'>Loading...</p>;
 
   if (!data.length) return <p className='message-screen'>Sorry!<br />There's no data available here for the table called "{tableName}"</p>;
 
@@ -146,7 +146,6 @@ export const BrandCards = () => {
   }, ["Brand"]);
 
   if (loading) return <p className='loader' />;
-
   return (
     <table>
       {data.map((brand) => (

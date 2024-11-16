@@ -59,7 +59,7 @@ export const TableComponent: React.FC<TableProps> = ({ tableName }) => {
   );
 };
 
-export const CardView: React.FC<TableProps> = ({ tableName }) => {
+export const VertTable: React.FC<TableProps> = ({ tableName }) => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -79,13 +79,22 @@ export const CardView: React.FC<TableProps> = ({ tableName }) => {
     fetchData();
   }, [tableName]);
 
-  if (loading) return <p className='message-screen'>Loading...</p>;
+  if (loading) return <p className='loader'/>;
 
   if (!data.length) return <p className='message-screen'>Sorry!<br />There's no data available here for the table called "{tableName}"</p>;
 
   // Get table headers from the data keys
   const headers = Object.keys(data[0]);
   return (
-    <p> blah blah </p>
+    <table>
+      {headers.map((header) => (
+        <tr key={header}>
+          <th>{header}</th>
+          {data.map((row, index) => (
+            <td key={index}>{row[header]}</td>
+          ))}
+        </tr>
+      ))}
+    </table>
   );
 };

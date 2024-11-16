@@ -29,7 +29,7 @@ th {
 }
 
 table {
-  margin:auto;
+  margin: auto;
 }
 
 h1 {
@@ -172,8 +172,8 @@ a:visited {
   margin: auto;
   width: fit-content;
   padding: 0 5px 8px 0;
-  background: repeating-linear-gradient(90deg, currentColor 0 8%, #0000 0 10%) 200% 100%/200% 2.5px no-repeat;
-  animation: l3 2s steps(6) infinite;
+  background: repeating-linear-gradient(90deg, currentColor 0 8%, #0000 0 10%) 200% 100%/200% 3px no-repeat;
+  animation: l3 2.5s steps(6) infinite;
 }
 
 .loader:before {

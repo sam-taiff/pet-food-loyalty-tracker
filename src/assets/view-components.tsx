@@ -10,6 +10,32 @@ interface TableData {
   [key: string]: any;
 }
 
+// const codeStarter = {
+//   const [data, setData] = useState<TableData[]>([]);
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       setLoading(true);
+//       const { data, error } = await database.from(tableName).select('*');
+
+//       if (error) {
+//         console.error('Error fetching data:', error);
+//       } else {
+//         setData(data || []);
+//       }
+//       setLoading(false);
+//     };
+
+//     fetchData();
+//   }, [tableName]);
+
+//   if (loading) return <p className='message-screen'>Loading...</p>;
+
+//   if (!data.length) return <p className='message-screen'>Sorry!<br />There's no data available here for the table called "{tableName}"</p>;
+
+// }
+
 export const TableComponent: React.FC<TableProps> = ({ tableName }) => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +56,7 @@ export const TableComponent: React.FC<TableProps> = ({ tableName }) => {
     fetchData();
   }, [tableName]);
 
-  if (loading) return <p className='message-screen'>Loading...</p>;
+  if (loading) return <p className="loader" />;
 
   if (!data.length) return <p className='message-screen'>Sorry!<br />There's no data available here for the table called "{tableName}"</p>;
 
@@ -120,6 +146,7 @@ export const BrandCards = () => {
   }, ["Brand"]);
 
   if (loading) return <p className='loader' />;
+
   return (
     <table>
       {data.map((brand) => (
@@ -129,8 +156,8 @@ export const BrandCards = () => {
           </td>
           <td>
             Buy {brand.purchases_needed}, get a {brand.reward}<br />
-            Valid up to {brand.months_valid} before earliest purchase<br />
-            *{brand.tcs}.
+            {brand.months_valid && <p>Valid {brand.months_valid}</p>}
+            {brand.tcs && <p>*{brand.tcs}.</p>}
           </td>
         </tr>))}
     </table>

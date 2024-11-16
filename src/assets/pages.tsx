@@ -97,7 +97,7 @@ export const Brandpage = () => {
     return (
         <>
             <h1>Registered Brands</h1>
-            <TableComponent tableName="Brand" />
+            <BrandCards />
         </>
     );
 };
@@ -115,5 +115,6 @@ const Buildingpage = () => (
     <>
         <h1>builderpage</h1>
         <BrandCards />
+        <p className="loader" />
     </>
 );

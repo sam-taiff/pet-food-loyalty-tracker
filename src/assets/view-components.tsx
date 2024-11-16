@@ -79,7 +79,7 @@ export const VertTable: React.FC<TableProps> = ({ tableName }) => {
     fetchData();
   }, [tableName]);
 
-  if (loading) return <p className='loader'/>;
+  if (loading) return <p className='loader' />;
 
   if (!data.length) return <p className='message-screen'>Sorry!<br />There's no data available here for the table called "{tableName}"</p>;
 
@@ -95,6 +95,44 @@ export const VertTable: React.FC<TableProps> = ({ tableName }) => {
           ))}
         </tr>
       ))}
+    </table>
+  );
+};
+
+export const BrandCards = () => {
+  const [data, setData] = useState<TableData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const { data, error } = await database.from("Brand").select('*');
+
+      if (error) {
+        console.error('Error fetching data:', error);
+      } else {
+        setData(data || []);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, ["Brand"]);
+
+  if (loading) return <p className='loader' />;
+  return (
+    <table>
+      {data.map((brand) => (
+        <tr>
+          <td id="card">
+            <img className="brand-logo" src={brand.logo} />
+          </td>
+          <td>
+            Buy {brand.purchases_needed}, get a {brand.reward}<br />
+            Valid up to {brand.months_valid} before earliest purchase<br />
+            *{brand.tcs}.
+          </td>
+        </tr>))}
     </table>
   );
 };

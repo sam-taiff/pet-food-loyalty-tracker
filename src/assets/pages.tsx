@@ -1,8 +1,8 @@
 import '../master.css';
-import { hills } from './brandSVG.tsx';
 import logo from './sparrow.png';
+import royalCanin from './rc.png';
 import { Route, Routes } from 'react-router-dom';
-import { TableComponent, VertTable } from './view-components.tsx';
+import { TableComponent, VertTable, BrandCards } from './view-components.tsx';
 
 //placeholder text (DEV USE ONLY)
 const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lectus dui, rutrum sit amet nibh et, consectetur consequat metus. Nunc ultricies enim nec suscipit mollis. Praesent hendrerit, neque nec porta semper, sem tellus venenatis mi, vel sollicitudin tortor elit in libero. Etiam vitae enim eu velit aliquam fringilla. Mauris eleifend ante nisi, sit amet imperdiet purus sodales vitae. Ut posuere rhoncus quam nec dapibus. Proin ullamcorper mauris et lorem dignissim vehicula vitae mattis orci. In eu pulvinar ex. Curabitur euismod tellus quis enim condimentum vehicula. Fusce ac placerat nisi, in ultrices elit. Nulla fringilla ultrices eros, ut dictum felis luctus in. Donec pulvinar tempor felis, sit amet dignissim metus. Maecenas lectus erat, tempor vitae turpis vel, vulputate ultrices nisi."
@@ -97,7 +97,7 @@ export const Brandpage = () => {
     return (
         <>
             <h1>Registered Brands</h1>
-            <VertTable tableName="Brand" />
+            <TableComponent tableName="Brand" />
         </>
     );
 };
@@ -114,20 +114,6 @@ export const Databasepage = () => {
 const Buildingpage = () => (
     <>
         <h1>builderpage</h1>
-        <table>
-            <tr>
-                <td id="brand-logo">
-                    <img src={hills} />
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
+        <BrandCards />
     </>
 );

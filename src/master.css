@@ -21,18 +21,15 @@ Burnt Sienna: #e76f51 */
 }
 
 table,
-tr {
-  border-collapse: collapse;
-  border: 1px solid transparent;
-  width: 100%;
-  vertical-align: top;
-}
-
+tr,
 td,
 th {
   border-collapse: collapse;
   border: 1px solid var(--brown);
-  width: fit-content;
+}
+
+table {
+  margin:auto;
 }
 
 h1 {
@@ -88,6 +85,7 @@ a:visited {
   justify-content: space-evenly;
   flex-wrap: wrap;
   justify-items: stretch;
+  vertical-align: top;
 }
 
 #main-area {
@@ -141,6 +139,7 @@ a:visited {
 #due-view {
   display: flex;
   vertical-align: top;
+  width: 100%;
 }
 
 #filter-due,
@@ -163,30 +162,35 @@ a:visited {
   color: var(--sienna);
 }
 
-.message-screen, .loader{
+.message-screen,
+.loader {
   color: var(--sienna);
   font: small-caps 1.75em "Concert One", sans-serif;
 }
 
-/* HTML: <div class="loader"></div> */
-/* .loader {
-  clip-path: inset(0 3ch 0 0);
-  animation: l4 1s steps(4) infinite;
-}
-.loader:before {
-  content:"Loading..."
-}
-@keyframes l4 {to{clip-path: inset(0 -1ch 0 0)}} */
-
-/* HTML: <div class="loader"></div> */
 .loader {
   margin: auto;
   width: fit-content;
   padding: 0 5px 8px 0;
-  background: repeating-linear-gradient(90deg,currentColor 0 8%,#0000 0 10%) 200% 100%/200% 3px no-repeat;
+  background: repeating-linear-gradient(90deg, currentColor 0 8%, #0000 0 10%) 200% 100%/200% 2.5px no-repeat;
   animation: l3 2s steps(6) infinite;
 }
+
 .loader:before {
-  content:"Loading"
+  content: "Loading"
 }
-@keyframes l3 {to{background-position: 80% 100%}}
+
+@keyframes l3 {
+  to {
+    background-position: 80% 100%
+  }
+}
+
+.brand-logo {
+  max-width: 75%;
+  max-height: 150px;
+}
+
+#card {
+  width: 33%;
+}

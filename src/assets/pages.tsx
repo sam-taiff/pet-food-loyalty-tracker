@@ -77,17 +77,10 @@ export const Homepage = () => {
 
 //Profile Page
 export const Profilepage = () => {
-    {/*
-    let custName = customer.firstName + customer.lastName;
-    */}
-
-    
+    const customerID ='217a98b6-5ea2-4a59-afa6-cfa7e4e4aadc'
     return (
         <div>
-            <CurrentProfile customerID='217a98b6-5ea2-4a59-afa6-cfa7e4e4aadc' />
-            <Routes>
-                <Route path = "/" element={<Homepage />} />
-            </Routes>
+            <CurrentProfile customerID={customerID} />
         </div>
     );
 };
@@ -114,8 +107,5 @@ export const Databasepage = () => {
 const Buildingpage = () => (
     <>
         <h1>builderpage</h1>
-        <BrandCards />
-        <p className='loader' />
-        <CurrentProfile customerID='217a98b6-5ea2-4a59-afa6-cfa7e4e4aadc' />
     </>
 );

@@ -186,49 +186,66 @@ export const CurrentProfile: React.FC<ProfileProps> = ({ customerID }) => {
 };
 
 export const CustomerCards: React.FC<ProfileProps> = ({ customerID }) => {
-  const [data, setData] = useState<TableData[]>([]);
+  const [groupedData, setGroupedData] = useState<{ [key: string]: TableData[] }>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const { data, error } = await database.from('Purchase').select('date, size, salesperson').eq('customer_id', customerID)
+      const { data, error } = await database
+        .from('Purchase')
+        .select('date, size, salesperson, brand_id, species')
+        .eq('customer_id', customerID);
+
       if (error) {
         console.error('Error fetching data:', error);
-      } else {
-        setData(data || []);
+        setLoading(false);
+        return;
       }
-      setLoading(false);
 
+      // Format the date field
       const formattedData = data
-      ? data.map((item) => ({
-          ...item,
-          date: item.date
-            ? new Intl.DateTimeFormat('en-GB', {
-                day: '2-digit',
-                month: 'short',
-                year: '2-digit',
-              }).format(new Date(item.date))
-            : null, // Leave it as null if the date is null or undefined
-        }))
-      : [];
+        ? data.map((item) => ({
+            ...item,
+            date: item.date
+              ? new Intl.DateTimeFormat('en-GB', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: '2-digit',
+                }).format(new Date(item.date))
+              : null,
+          }))
+        : [];
 
-      setData(formattedData);
+      // Group data by brand_id and species
+      const grouped = formattedData.reduce((acc, item) => {
+        const groupKey = `${item.brand_id || 'Unspecified'} | ${item.species || 'Unspecified'}`;
+        if (!acc[groupKey]) acc[groupKey] = [];
+        acc[groupKey].push(item);
+        return acc;
+      }, {} as { [key: string]: TableData[] });
+
+      setGroupedData(grouped);
+      setLoading(false);
     };
 
     fetchData();
-  }, []);
+  }, [customerID]);
 
   if (loading) return <p className='loader' />;
 
-  const headers = Object.keys(data[0]);
   return (
-    <div id='purchase-stamp'>
-      {data.map((purchase) => (
-        <div>
-          {purchase.date ? <span>{purchase.date}</span> : 'no date provided'}<br />
-          {purchase.size ? purchase.size : 'no size provided'}<br />
-          {purchase.salesperson ? purchase.salesperson : 'no salesperson provided'}
+    <div id='purchase-groups'>
+      {Object.entries(groupedData).map(([groupKey, purchases]) => (
+        <div key={groupKey} className="purchase-group">
+          <span>{groupKey}</span>
+          {purchases.map((purchase, index) => (
+            <div key={index} className="purchase-stamp">
+              {purchase.date ? <span>{purchase.date}</span> : 'missing date'}<br />
+              {purchase.size ? purchase.size : 'missing size'}<br />
+              {purchase.salesperson ? purchase.salesperson : 'missing staff init.'}
+            </div>
+          ))}
         </div>
       ))}
     </div>

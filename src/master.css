@@ -195,13 +195,13 @@ a:visited {
   max-height: 150px;
 }
 
-#purchase-stamp {
-  border: 8pt solid var(--green);
+#purchase-groups {
+  border: 1pt solid var(--charcoal);
   display: flex;
   flex-wrap: wrap;
 }
-
-#purchase-stamp div {
+/* 
+#purchase-groups div {
   border: 1px solid var(--charcoal);
   padding: 8pt 10pt;
   width: 10vw;
@@ -209,19 +209,19 @@ a:visited {
   opacity: 0.8;
 }
 
-#purchase-stamp div span {
+#purchase-groups div span {
   color:var(--sienna);
   font-size:larger;
-}
-
-/* #purchase-stamp th {
-  border: 1px solid var(--charcoal);
-  padding: 8pt 10pt;
-  width: 10vw;
-}
-
-#purchase-stamp td {
-  border: 1px solid var(--charcoal);
-  padding: 8pt 10pt;
-  min-width:6vw;
 } */
+
+.purchase-group {
+  border: 1px solid var(--charcoal);
+  padding: 8pt 10pt;
+  border-radius: 8pt;
+  margin:0pt 8pt 8pt 0pt;
+}
+
+.purchase-stamp {
+  border: 1px solid var(--charcoal);
+  padding: 8pt 10pt;
+}

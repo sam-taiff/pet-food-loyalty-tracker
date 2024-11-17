@@ -199,25 +199,38 @@ export const CustomerCards: React.FC<ProfileProps> = ({ customerID }) => {
         setData(data || []);
       }
       setLoading(false);
+
+      const formattedData = data
+      ? data.map((item) => ({
+          ...item,
+          date: item.date
+            ? new Intl.DateTimeFormat('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: '2-digit',
+              }).format(new Date(item.date))
+            : null, // Leave it as null if the date is null or undefined
+        }))
+      : [];
+
+      setData(formattedData);
     };
 
     fetchData();
-  }, ['Purchase']);
+  }, []);
 
   if (loading) return <p className='loader' />;
 
   const headers = Object.keys(data[0]);
   return (
-    <table id='purchase-stamp'>
-      <tbody>
-        {headers.map((header) => (
-          <tr>
-            {data.map((row, index) => (
-              <td>{row[header]}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div id='purchase-stamp'>
+      {data.map((purchase) => (
+        <div>
+          {purchase.date ? <span>{purchase.date}</span> : 'no date provided'}<br />
+          {purchase.size ? purchase.size : 'no size provided'}<br />
+          {purchase.salesperson ? purchase.salesperson : 'no salesperson provided'}
+        </div>
+      ))}
+    </div>
   );
 };

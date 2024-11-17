@@ -157,7 +157,7 @@ a:visited {
   flex-wrap: wrap;
 }
 
-#due-view div{
+#due-view div {
   border: 3px solid var(--green);
   padding: 8pt 10pt;
   max-width: 32%;
@@ -197,16 +197,31 @@ a:visited {
 
 #purchase-stamp {
   border: 8pt solid var(--green);
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
 }
 
-#purchase-stamp th {
+#purchase-stamp div {
+  border: 1px solid var(--charcoal);
+  padding: 8pt 10pt;
+  width: 10vw;
+  font: small-caps 1.5em "Concert One", sans-serif;
+}
+
+#purchase-stamp div span {
+  color:var(--green);
+  font-size:larger;
+}
+
+/* #purchase-stamp th {
   border: 1px solid var(--charcoal);
   padding: 8pt 10pt;
   width: 10vw;
 }
 
-#purchase-stamp td /* card text-fields */ {
+#purchase-stamp td {
   border: 1px solid var(--charcoal);
   padding: 8pt 10pt;
   min-width:6vw;
-}
+} */

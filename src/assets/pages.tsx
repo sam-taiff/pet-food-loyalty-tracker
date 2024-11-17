@@ -111,14 +111,6 @@ export const Databasepage = () => {
 const Buildingpage = () => (
     <>
         <h1>builderpage</h1>
-            <table id='purchase-stamp'>
-                <tbody>
-                    <tr>
-                        <th>Name</th>
-                        <td>{lorem}</td>
-                    </tr>
-                </tbody>
-            </table>
         <CustomerCards customerID='217a98b6-5ea2-4a59-afa6-cfa7e4e4aadc' />
     </>
 );

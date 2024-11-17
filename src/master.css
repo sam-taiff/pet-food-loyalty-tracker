@@ -198,7 +198,6 @@ a:visited {
 #purchase-stamp {
   border: 8pt solid var(--green);
   display: flex;
-  justify-content: space-evenly;
   flex-wrap: wrap;
 }
 
@@ -207,10 +206,11 @@ a:visited {
   padding: 8pt 10pt;
   width: 10vw;
   font: small-caps 1.5em "Concert One", sans-serif;
+  opacity: 0.8;
 }
 
 #purchase-stamp div span {
-  color:var(--green);
+  color:var(--sienna);
   font-size:larger;
 }
 

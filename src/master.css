@@ -32,7 +32,8 @@ table {
   margin: auto;
 }
 
-h1, #Profile {
+h1,
+#Profile {
   font: small-caps 2em "Concert One", sans-serif;
   color: var(--green);
 }
@@ -136,30 +137,34 @@ a:visited {
   box-shadow: inset;
 }
 
-#due-view {
+#live-view {
   display: flex;
   vertical-align: top;
   width: 100%;
 }
 
-#filter-due,
-#due-cards {
-  padding: 5px 10px;
-  vertical-align: auto;
-  word-wrap: break-word;
-}
-
 #filter-due {
   width: 30%;
   text-align: left;
+  word-wrap: break-word;
+  padding: 8pt 10pt;
 }
 
-#due-cards {
+#due-view {
   width: 100%;
+  border: 1px solid black;
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
 }
 
-#cust-name {
-  color: var(--sienna);
+#due-view div{
+  border: 3px solid var(--green);
+  padding: 8pt 10pt;
+  max-width: 32%;
+  aspect-ratio: 4/3;
+  margin: 10pt;
+  border-radius: 10pt;
 }
 
 .message-screen,
@@ -191,6 +196,17 @@ a:visited {
   max-height: 150px;
 }
 
-#card {
-  width: 33%;
+#progress-card {
+  border: 8pt solid var(--green);
+  display: flex;
+  flex-wrap: wrap;
+  aspect-ratio: 4/3;
+  vertical-align: top;
+  border-radius: 8pt;
+}
+
+#progress-card div /* card text-fields */ {
+  border: 1px solid var(--charcoal);
+  padding: 8pt 10pt;
+  max-width: 50%;
 }

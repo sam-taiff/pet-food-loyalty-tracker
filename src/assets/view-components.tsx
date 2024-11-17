@@ -129,7 +129,7 @@ export const BrandCards = () => {
     <table>
       {data.map((brand) => (
         <tr>
-          <td id="card">
+          <td>
             <img className="brand-logo" src={brand.logo} />
           </td>
           <td>

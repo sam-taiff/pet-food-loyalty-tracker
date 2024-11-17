@@ -67,9 +67,13 @@ export const Homepage = () => {
                     />
                 </form>
             </search>
-            <div id="due-view"> {/* viewport of all "due cards" */}
+            <div id="live-view"> {/* viewport of all "due cards" */}
                 <div id="filter-due">{lorem}</div>
-                <div id="due-cards">{lorem}</div>
+                <div id="due-view">
+                    <div>{lorem}</div>
+                    <div>bambam</div>
+                    <div>{lorem}</div>
+                </div>
             </div>
         </div>
     );
@@ -77,7 +81,7 @@ export const Homepage = () => {
 
 //Profile Page
 export const Profilepage = () => {
-    const customerID ='217a98b6-5ea2-4a59-afa6-cfa7e4e4aadc'
+    const customerID = '217a98b6-5ea2-4a59-afa6-cfa7e4e4aadc'
     return (
         <div>
             <CurrentProfile customerID={customerID} />
@@ -107,5 +111,10 @@ export const Databasepage = () => {
 const Buildingpage = () => (
     <>
         <h1>builderpage</h1>
+        <div id="progress-card">
+            <div>Name</div>
+            <div>{lorem}</div>
+            <div>{lorem}</div>
+        </div>
     </>
 );

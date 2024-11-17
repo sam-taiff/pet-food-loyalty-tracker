@@ -210,6 +210,8 @@ a:visited {
 
 .purchase-group #card-title {
   font: small-caps 1.75em "Concert One", sans-serif;
+  display:flex;
+ justify-content:space-evenly;
 }
 
 #purchase-stamps {

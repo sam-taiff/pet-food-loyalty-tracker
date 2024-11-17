@@ -219,7 +219,7 @@ export const CustomerCards: React.FC<ProfileProps> = ({ customerID }) => {
 
       // Group data by brand_id and species
       const grouped = formattedData.reduce((acc, item) => {
-        const groupKey = `${item.brand_id || 'Unspecified'} | ${item.species || 'Unspecified'}`;
+        const groupKey = `${item.brand_id || 'Unspecified'}|${item.species || 'Unspecified'}`;
         if (!acc[groupKey]) acc[groupKey] = [];
         acc[groupKey].push(item);
         return acc;
@@ -238,13 +238,16 @@ export const CustomerCards: React.FC<ProfileProps> = ({ customerID }) => {
     <div id='purchase-groups'>
       {Object.entries(groupedData).map(([groupKey, purchases]) => (
         <div key={groupKey} className="purchase-group">
-          <span id='card-title'>{groupKey}</span>
+          <span id='card-title'>
+            <span className="brand">{groupKey.split('|')[0]}</span>
+            <span className="species">{groupKey.split('|')[1]}</span>
+          </span>
           <div id='purchase-stamps'>
             {purchases.map((purchase, index) => (
               <div key={index} className="purchase-stamp">
                 {purchase.date ? <span>{purchase.date}</span> : 'missing date'}<br />
-                {purchase.size ? purchase.size : 'missing size'}<br />
-                {purchase.salesperson ? purchase.salesperson : 'missing staff init.'}
+                {purchase.size || 'missing size'}<br />
+                {purchase.salesperson || 'missing staff init.'}
               </div>
             ))}
           </div>

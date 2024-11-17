@@ -1,8 +1,7 @@
 import '../master.css';
 import logo from './sparrow.png';
-import royalCanin from './rc.png';
 import { Route, Routes } from 'react-router-dom';
-import { TableComponent, VertTable, BrandCards } from './view-components.tsx';
+import { TableComponent, VertTable, BrandCards, CurrentProfile } from './view-components.tsx';
 
 //placeholder text (DEV USE ONLY)
 const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lectus dui, rutrum sit amet nibh et, consectetur consequat metus. Nunc ultricies enim nec suscipit mollis. Praesent hendrerit, neque nec porta semper, sem tellus venenatis mi, vel sollicitudin tortor elit in libero. Etiam vitae enim eu velit aliquam fringilla. Mauris eleifend ante nisi, sit amet imperdiet purus sodales vitae. Ut posuere rhoncus quam nec dapibus. Proin ullamcorper mauris et lorem dignissim vehicula vitae mattis orci. In eu pulvinar ex. Curabitur euismod tellus quis enim condimentum vehicula. Fusce ac placerat nisi, in ultrices elit. Nulla fringilla ultrices eros, ut dictum felis luctus in. Donec pulvinar tempor felis, sit amet dignissim metus. Maecenas lectus erat, tempor vitae turpis vel, vulputate ultrices nisi."
@@ -79,15 +78,16 @@ export const Homepage = () => {
 //Profile Page
 export const Profilepage = () => {
     {/*
-        const custName = customer.firstName + customer.lastName;
+    let custName = customer.firstName + customer.lastName;
+    */}
 
-
-        */}
+    
     return (
         <div>
-            <div>
-
-            </div>
+            <CurrentProfile customerID='217a98b6-5ea2-4a59-afa6-cfa7e4e4aadc' />
+            <Routes>
+                <Route path = "/" element={<Homepage />} />
+            </Routes>
         </div>
     );
 };
@@ -115,6 +115,7 @@ const Buildingpage = () => (
     <>
         <h1>builderpage</h1>
         <BrandCards />
-        <p className="loader" />
+        <p className='loader' />
+        <CurrentProfile customerID='217a98b6-5ea2-4a59-afa6-cfa7e4e4aadc' />
     </>
 );

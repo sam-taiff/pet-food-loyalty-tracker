@@ -32,14 +32,14 @@ table {
   margin: auto;
 }
 
-h1 {
+h1, #Profile {
   font: small-caps 2em "Concert One", sans-serif;
   color: var(--green);
 }
 
 th {
   font: small-caps 1.5em "Concert One", sans-serif;
-  color: var(--sienna);
+  color: var(--green);
 }
 
 hr {

@@ -1,40 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { database } from "./client.ts";
 
-// Define types for our data
 interface TableProps {
   tableName: string;
+}
+
+interface ProfileProps {
+  customerID: string;
 }
 
 interface TableData {
   [key: string]: any;
 }
-
-// const codeStarter = {
-//   const [data, setData] = useState<TableData[]>([]);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       setLoading(true);
-//       const { data, error } = await database.from(tableName).select('*');
-
-//       if (error) {
-//         console.error('Error fetching data:', error);
-//       } else {
-//         setData(data || []);
-//       }
-//       setLoading(false);
-//     };
-
-//     fetchData();
-//   }, [tableName]);
-
-//   if (loading) return <p className='message-screen'>Loading...</p>;
-
-//   if (!data.length) return <p className='message-screen'>Sorry!<br />There's no data available here for the table called "{tableName}"</p>;
-
-// }
 
 export const TableComponent: React.FC<TableProps> = ({ tableName }) => {
   const [data, setData] = useState<TableData[]>([]);
@@ -56,7 +33,7 @@ export const TableComponent: React.FC<TableProps> = ({ tableName }) => {
     fetchData();
   }, [tableName]);
 
-  if (loading) return <p className='message-screen'>Loading...</p>;
+  if (loading) return <p className='loader' />;
 
   if (!data.length) return <p className='message-screen'>Sorry!<br />There's no data available here for the table called "{tableName}"</p>;
 
@@ -113,14 +90,16 @@ export const VertTable: React.FC<TableProps> = ({ tableName }) => {
   const headers = Object.keys(data[0]);
   return (
     <table>
-      {headers.map((header) => (
-        <tr key={header}>
-          <th>{header}</th>
-          {data.map((row, index) => (
-            <td key={index}>{row[header]}</td>
-          ))}
-        </tr>
-      ))}
+      <tbody>
+        {headers.map((header) => (
+          <tr key={header}>
+            <th>{header}</th>
+            {data.map((row, index) => (
+              <td key={index}>{row[header]}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
     </table>
   );
 };
@@ -160,5 +139,48 @@ export const BrandCards = () => {
           </td>
         </tr>))}
     </table>
+  );
+};
+
+export const CurrentProfile: React.FC<ProfileProps> = ({ customerID }) => {
+  const [data, setData] = useState<TableData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const { data, error } = await database.from('Customer').select('*').eq('id', customerID)
+      if (error) {
+        console.error('Error fetching data:', error);
+      } else {
+        setData(data || []);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, ['Customer']);
+
+  if (loading) return <p className='loader' />;
+
+  return (
+    <>
+      {data.map((customer) => (
+        <table id='Profile'>
+          <thead>
+            <tr>
+              <th>Name:</th>
+              <th>{customer.first_name + ' ' + customer.last_name}</th>
+            </tr>
+            <tr>
+              <th>Phone:</th>
+              {customer.phone.length < 11 ?
+                <th>{customer.phone.slice(0, 3) + ' ' + customer.phone.slice(3, 6) + ' ' + customer.phone.slice(6)}</th> :
+                <th>{customer.phone.slice(0, 3) + ' ' + customer.phone.slice(3, 7) + ' ' + customer.phone.slice(7)}</th>}
+            </tr>
+          </thead>
+        </table>
+      ))}
+    </>
   );
 };

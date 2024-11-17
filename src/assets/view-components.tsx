@@ -166,20 +166,14 @@ export const CurrentProfile: React.FC<ProfileProps> = ({ customerID }) => {
   return (
     <>
       {data.map((customer) => (
-        <table id='Profile'>
-          <thead>
-            <tr>
-              <th>Name:</th>
-              <th>{customer.first_name + ' ' + customer.last_name}</th>
-            </tr>
-            <tr>
-              <th>Phone:</th>
-              {customer.phone.length < 11 ?
-                <th>{customer.phone.slice(0, 3) + ' ' + customer.phone.slice(3, 6) + ' ' + customer.phone.slice(6)}</th> :
-                <th>{customer.phone.slice(0, 3) + ' ' + customer.phone.slice(3, 7) + ' ' + customer.phone.slice(7)}</th>}
-            </tr>
-          </thead>
-        </table>
+        <div id='profile'>
+          <span className="name">{customer.first_name + ' ' + customer.last_name}</span>
+          <span className="phone">
+            {customer.phone.length < 11
+              ? customer.phone.slice(0, 3) + ' ' + customer.phone.slice(3, 6) + ' ' + customer.phone.slice(6)
+              : customer.phone.slice(0, 3) + ' ' + customer.phone.slice(3, 7) + ' ' + customer.phone.slice(7)}
+          </span>
+        </div>
       ))}
     </>
   );

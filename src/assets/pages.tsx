@@ -85,6 +85,7 @@ export const Profilepage = () => {
     return (
         <div>
             <CurrentProfile customerID={customerID} />
+            <CustomerCards customerID={customerID} />
         </div>
     );
 };

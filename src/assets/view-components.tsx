@@ -184,3 +184,40 @@ export const CurrentProfile: React.FC<ProfileProps> = ({ customerID }) => {
     </>
   );
 };
+
+export const CustomerCards: React.FC<ProfileProps> = ({ customerID }) => {
+  const [data, setData] = useState<TableData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const { data, error } = await database.from('Purchase').select('date, size, salesperson').eq('customer_id', customerID)
+      if (error) {
+        console.error('Error fetching data:', error);
+      } else {
+        setData(data || []);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, ['Purchase']);
+
+  if (loading) return <p className='loader' />;
+
+  const headers = Object.keys(data[0]);
+  return (
+    <table id='purchase-stamp'>
+      <tbody>
+        {headers.map((header) => (
+          <tr>
+            {data.map((row, index) => (
+              <td>{row[header]}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};

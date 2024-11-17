@@ -25,7 +25,6 @@ tr,
 td,
 th {
   border-collapse: collapse;
-  border: 1px solid var(--brown);
 }
 
 table {
@@ -38,10 +37,10 @@ h1,
   color: var(--green);
 }
 
-th {
+/* th {
   font: small-caps 1.5em "Concert One", sans-serif;
   color: var(--green);
-}
+} */
 
 hr {
   width: 100%;
@@ -196,17 +195,18 @@ a:visited {
   max-height: 150px;
 }
 
-#progress-card {
+#purchase-stamp {
   border: 8pt solid var(--green);
-  display: flex;
-  flex-wrap: wrap;
-  aspect-ratio: 4/3;
-  vertical-align: top;
-  border-radius: 8pt;
 }
 
-#progress-card div /* card text-fields */ {
+#purchase-stamp th {
   border: 1px solid var(--charcoal);
   padding: 8pt 10pt;
-  max-width: 50%;
+  width: 10vw;
+}
+
+#purchase-stamp td /* card text-fields */ {
+  border: 1px solid var(--charcoal);
+  padding: 8pt 10pt;
+  min-width:6vw;
 }

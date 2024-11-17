@@ -198,6 +198,7 @@ a:visited {
   border: 1pt solid var(--charcoal);
   display: flex;
   flex-wrap: wrap;
+  background-color: var(--sienna);
 }
 
 .purchase-group {
@@ -205,6 +206,7 @@ a:visited {
   padding: 8pt 10pt;
   border-radius: 8pt;
   margin: 0pt 8pt 8pt 0pt;
+  background-color: var(--white);
 }
 
 .purchase-group #card-title {

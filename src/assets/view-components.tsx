@@ -206,15 +206,15 @@ export const CustomerCards: React.FC<ProfileProps> = ({ customerID }) => {
       // Format the date field
       const formattedData = data
         ? data.map((item) => ({
-            ...item,
-            date: item.date
-              ? new Intl.DateTimeFormat('en-GB', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: '2-digit',
-                }).format(new Date(item.date))
-              : null,
-          }))
+          ...item,
+          date: item.date
+            ? new Intl.DateTimeFormat('en-GB', {
+              day: '2-digit',
+              month: 'short',
+              year: '2-digit',
+            }).format(new Date(item.date)).replace(/\s+/g, '')
+            : null,
+        }))
         : [];
 
       // Group data by brand_id and species
@@ -238,14 +238,16 @@ export const CustomerCards: React.FC<ProfileProps> = ({ customerID }) => {
     <div id='purchase-groups'>
       {Object.entries(groupedData).map(([groupKey, purchases]) => (
         <div key={groupKey} className="purchase-group">
-          <span>{groupKey}</span>
-          {purchases.map((purchase, index) => (
-            <div key={index} className="purchase-stamp">
-              {purchase.date ? <span>{purchase.date}</span> : 'missing date'}<br />
-              {purchase.size ? purchase.size : 'missing size'}<br />
-              {purchase.salesperson ? purchase.salesperson : 'missing staff init.'}
-            </div>
-          ))}
+          <span id='card-title'>{groupKey}</span>
+          <div id='purchase-stamps'>
+            {purchases.map((purchase, index) => (
+              <div key={index} className="purchase-stamp">
+                {purchase.date ? <span>{purchase.date}</span> : 'missing date'}<br />
+                {purchase.size ? purchase.size : 'missing size'}<br />
+                {purchase.salesperson ? purchase.salesperson : 'missing staff init.'}
+              </div>
+            ))}
+          </div>
         </div>
       ))}
     </div>

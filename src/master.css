@@ -200,25 +200,27 @@ a:visited {
   display: flex;
   flex-wrap: wrap;
 }
-/* 
-#purchase-groups div {
-  border: 1px solid var(--charcoal);
-  padding: 8pt 10pt;
-  width: 10vw;
-  font: small-caps 1.5em "Concert One", sans-serif;
-  opacity: 0.8;
-}
-
-#purchase-groups div span {
-  color:var(--sienna);
-  font-size:larger;
-} */
 
 .purchase-group {
   border: 1px solid var(--charcoal);
   padding: 8pt 10pt;
   border-radius: 8pt;
   margin:0pt 8pt 8pt 0pt;
+}
+
+.purchase-group #card-title {
+  font: small-caps 1.75em "Concert One", sans-serif;
+}
+
+#purchase-stamps {
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--charcoal);
+}
+
+#purchase-stamps span {
+  font: small-caps 500 1.5em "Oswald", sans-serif;
+  line-height: 0;
 }
 
 .purchase-stamp {

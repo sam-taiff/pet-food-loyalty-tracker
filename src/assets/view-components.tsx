@@ -250,3 +250,43 @@ export const CustomerCards: React.FC<ProfileProps> = ({ customerID }) => {
     </div>
   );
 };
+
+export const useSupabaseSearch = (searchTerm: string, tableName: string) => {
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!searchTerm) {
+      setResults([]);
+      return;
+    }
+
+    const search = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const { data, error } = await database
+          .from(tableName)
+          .select("*")
+          .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`);
+          
+        if (error) throw error;
+        setResults(data || []);
+      } catch (err: unknown) {
+        console.error("Query Error:", err);
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unknown error occurred");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    search();
+  }, [searchTerm, tableName]);
+
+  return { results, loading, error };
+};

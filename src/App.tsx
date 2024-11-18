@@ -12,7 +12,7 @@ import {
   SideNavBar,
   Brandpage,
   Databasepage,
-  Profilepage,
+  ProfilePage,
 } from './assets/pages';
 
 function App() {

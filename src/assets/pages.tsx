@@ -4,9 +4,6 @@ import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { TableComponent, VertTable, BrandCards, CurrentProfile, CustomerCards, useSupabaseSearch } from './view-components.tsx';
 import React, { useEffect, useState } from 'react';
 import { database } from "./client.ts";
-interface ProfileProps {
-    customerID: string;
-}
 
 //placeholder text (DEV USE ONLY)
 const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lectus dui, rutrum sit amet nibh et, consectetur consequat metus. Nunc ultricies enim nec suscipit mollis. Praesent hendrerit, neque nec porta semper, sem tellus venenatis mi, vel sollicitudin tortor elit in libero. Etiam vitae enim eu velit aliquam fringilla. Mauris eleifend ante nisi, sit amet imperdiet purus sodales vitae. Ut posuere rhoncus quam nec dapibus. Proin ullamcorper mauris et lorem dignissim vehicula vitae mattis orci. In eu pulvinar ex. Curabitur euismod tellus quis enim condimentum vehicula. Fusce ac placerat nisi, in ultrices elit. Nulla fringilla ultrices eros, ut dictum felis luctus in. Donec pulvinar tempor felis, sit amet dignissim metus. Maecenas lectus erat, tempor vitae turpis vel, vulputate ultrices nisi."
@@ -14,13 +11,13 @@ const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
 export const TopBar = () => {
     const pageName = "";
     return (
-        <div>
+        <div id="header">
             <div className='topbar'>
                 <img src={logo} id="logo" />
                 <a title="Back to Homepage" href='/'>
                     <span className='topbar item'>Loyalty Card Tracking</span>
                 </a>
-                <span className='topbar item' id="cust-name">{pageName}</span>
+                {/* <span className='topbar item' id="cust-name">{pageName}</span> */}
             </div>
             <hr />
         </div>
@@ -45,7 +42,7 @@ export const SideNavBar = () => {
                             <Route path="/" element={<Homepage />} />
                             <Route path="/brands" element={<Brandpage />} />
                             <Route path="/database" element={<Databasepage />} />
-                            <Route path="/build" element={<Searchpage />} />
+                            <Route path="/build" element={<Buildingpage />} />
                             <Route path="/profile/:customerID" element={<ProfilePage />} />
                         </Routes>
                     </td>
@@ -56,7 +53,7 @@ export const SideNavBar = () => {
 }
 
 //Search
-export const Searchpage = () => {
+export const SearchnResults = () => {
     const [searchTerm, setSearchTerm] = useState<string>(""); // Actual input value
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>(""); // Debounced value
     const [activeIndex, setActiveIndex] = useState<number>(-1); // Track the active result index
@@ -204,6 +201,7 @@ export const Homepage = () => {
                 </form>
             </search> */}
             <div id="live-view"> {/* viewport of all "due cards" */}
+                <SearchnResults />
                 <div id="filter-due">{lorem}</div>
                 <div id="due-view">
                     <div>{lorem}</div>
@@ -237,5 +235,6 @@ export const Databasepage = () => {
 const Buildingpage = () => (
     <>
         <h1>builderpage</h1>
+        <SearchnResults />
     </>
 );

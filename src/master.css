@@ -13,11 +13,13 @@ Burnt Sienna: #e76f51 */
   --back1: #ffe66d;
   --back2: #9bbec7;
   --border2: #7ac950;
+  --thickBorder: 5px solid var(--border1);
   font: 12pt "Open Sans", Arial;
   text-rendering: optimizeLegibility;
   background-color: var(--white);
   color: var(--baseT);
   text-align: center;
+  --topbarH: 5vh;
 }
 
 table,
@@ -55,11 +57,12 @@ a:visited {
   display: flex;
   border-bottom: 3px solid var(--back2);
   background-color: var(--white);
-  height: 7vh;
+  height: var(--topbarH);
   width: 100%;
   margin-bottom: 1.5vh;
   position: sticky;
   top: 0;
+  padding: 10px 15px 15px 10px;
 }
 
 #topbar * {
@@ -74,13 +77,15 @@ a:visited {
   width: 20vw;
   margin: 0px 10px;
   position: sticky;
-  top: 9vh;
+  top: calc(var(--topbarH) + 5.75vh);
   float: left;
 }
 
 #page {
-  min-width: 50vw;
-  display:flex;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
 }
 
 #logo {
@@ -91,73 +96,70 @@ a:visited {
 /*HOMEPAGE*/
 #search-input {
   width: 80%;
-  font: lighter 1.5em "Concert One";
+  font: 1.25em "Concert One";
   letter-spacing: 2pt;
-  border-color: transparent;
-  border-radius: 12px;
-  padding: 0.5rem;
-  text-align: center;
-  margin-bottom: 8pt;
   outline: none;
-  background-color: var(--back2);
+  border-radius: 12px;
+  padding: 0.6em 1.2em;
+  text-align: center;
+  margin-bottom: 4pt;
+  outline: none;
+  background-color: var(--white);
+  border: var(--thickBorder);
 }
 
 #search-input:focus {
-  outline: 4px solid var(--back2);
-  background-color: var(--white);
+  border-color: var(--back2);
+  background-color: var(--back2);
 }
 
 #sidenav a {
-  border: 5px solid var(--back2);
+  border: var(--thickBorder);
   border-radius: 12px;
   padding: 0.6em 1.2em;
   color: var(--baseT);
-  font-size: 1.25em;
-  font-family: "Concert One";
-  background-color: var(--back2);
+  font: 1.25em "Concert One";
+  background-color: var(--white);
   cursor: pointer;
-  transition: border-color, background-color 0.1s;
+  transition: border-color, background-color 0.075s;
   margin-bottom: 1rem;
 }
 
 #sidenav a:hover,
 #sidenav a:active {
-  background-color: var(--white);
-}
-
-#live-view {
-  display: flex;
-  width: 100%;
+  background-color: var(--back2);
+  border-color: var(--back2);
 }
 
 #filter-due {
   width: 30%;
+  min-width: 300px;
   text-align: left;
   word-wrap: break-word;
   padding: 8pt 10pt;
 }
 
 #due-view {
-  width: 100%;
+  min-width: 600px;
   border: 1px solid black;
   display: flex;
-  justify-content: space-evenly;
   flex-wrap: wrap;
 }
 
 #due-view div {
   border: 3px solid var(--border1);
-  padding: 8pt 10pt;
-  /* max-width: 32%;
-  aspect-ratio: 4/3; */
-  margin: 10pt;
-  border-radius: 10pt;
+  padding: 0.6em 1.2em;
+  max-width: 500px;
+  /* aspect-ratio: 4/3; */
+  margin: 15px 0px 0px 15px;
+  border-radius: 15px;
 }
 
 .message-screen,
 .loader {
   color: var(--border2);
   font: small-caps 1.75em "Concert One", sans-serif;
+  margin-top: 4pt;
 }
 
 .loader {
@@ -224,18 +226,26 @@ a:visited {
   font: small-caps 2.5em "Concert One", sans-serif;
   display: flex;
   justify-content: space-evenly;
-  color: black;
   background-color: var(--back2);
 }
 
-#active-result {
-  background-color: #f0f0f0;
-  font-weight: bold;
-  background-color: var(--border2);
+#active-result,
+.result:hover {
   cursor: pointer;
-  color: black;
+  /* border: var(--thickBorder); */
+  background-color: var(--back2);
 }
 
 #search-results {
-  font: small-caps 2em "Concert One", sans-serif;
+  font: 16pt "Open Sans", sans-serif;
+}
+
+.result {
+  padding: 0.15em 0.3em;
+  border-radius: 12pt;
+  /* border: 5px solid transparent; */
+}
+
+.result:hover {
+  transition: all 0.075s;
 }

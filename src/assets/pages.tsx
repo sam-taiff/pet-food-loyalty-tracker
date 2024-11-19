@@ -119,12 +119,13 @@ export const SearchnResults = () => {
                             className='result'
                             id={index === activeIndex ? "active-result" : ""}
                             onClick={() => handleResultClick(item.id)}>
-                            {item.first_name} {item.last_name}&nbsp;&nbsp;&nbsp;{item.phone}
+                            {item.first_name} {item.last_name}<br />{item.phone}
                         </div>
-                    ))
-                ) : (
-                    <div className='message-screen'>nothing to show here</div>
-                )}
+                    )))
+                    : results.length == 0 ? (
+                        <div className='message-screen'>nothing to show here</div>)
+                        : <div className='message-screen'></div>
+                }
             </div>
         </div>
     );
@@ -169,14 +170,12 @@ export const ProfilePage: React.FC = () => {
 export const Home = () => {
     return (
         <>
-            <div id="live-view"> {/* viewport of all "due cards" */}
-                <SearchnResults />
-                <div id="filter-due">{lorem}</div>
-                <div id="due-view">
-                    <div>{lorem}</div>
-                    <div>bambam</div>
-                    <div>{lorem}</div>
-                </div>
+            <SearchnResults />
+            <div id="filter-due">{lorem}</div>
+            <div id="due-view">
+                <div>{lorem}</div>
+                <div>bambam</div>
+                <div>{lorem}</div>
             </div>
         </>
     );

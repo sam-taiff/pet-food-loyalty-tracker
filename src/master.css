@@ -9,10 +9,10 @@ Burnt Sienna: #e76f51 */
 :root {
   --white: #f5f5f5;
   --baseT: #363636;
-  --border1: #c37d9277;
+  --border1: #c37d92;
   --back1: #ffe66d;
-  --back2: #9bbec77e;
-  --border2: #7ac95069;
+  --back2: #9bbec7;
+  --border2: #7ac950;
   font: 12pt "Open Sans", Arial;
   text-rendering: optimizeLegibility;
   background-color: var(--white);

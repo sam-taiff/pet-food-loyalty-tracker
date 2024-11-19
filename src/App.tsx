@@ -7,12 +7,13 @@ import {
   Route,
 } from "react-router-dom";
 import {
-  Homepage,
+  Home,
   TopBar,
   SideNavBar,
-  Brandpage,
-  Databasepage,
-  ProfilePage,
+  Brands,
+  Database,
+  Builder,
+  ProfilePage
 } from './assets/pages';
 
 function App() {
@@ -21,6 +22,15 @@ function App() {
       <Router>
         <TopBar />
         <SideNavBar />
+        <div id="page">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/brands" element={<Brands />} />
+            <Route path="/database" element={<Database />} />
+            <Route path="/build" element={<Builder />} />
+            <Route path="/profile/:customerID" element={<ProfilePage />} />
+          </Routes>
+        </div>
       </Router >
     </>
   )

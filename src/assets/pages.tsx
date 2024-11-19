@@ -11,44 +11,26 @@ const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
 export const TopBar = () => {
     const pageName = "";
     return (
-        <div id="header">
-            <div className='topbar'>
-                <img src={logo} id="logo" />
-                <a title="Back to Homepage" href='/'>
-                    <span className='topbar item'>Loyalty Card Tracking</span>
-                </a>
-                {/* <span className='topbar item' id="cust-name">{pageName}</span> */}
-            </div>
-            <hr />
+        <div id='topbar'>
+            <img src={logo} id="logo" />
+            <a title="Back to Homepage" href='/'>
+                <span>Loyalty Card Tracking</span>
+            </a>
+            {/* <span className='topbar item' id="cust-name">{pageName}</span> */}
         </div>
     )
 }
 
 export const SideNavBar = () => {
     return (
-        <table >
-            <tbody>
-                <tr>
-                    <td id="sidenav">
-                        <a title="Loyalty Card Tracking Home" href="/"><button>Home</button></a>
-                        <a title="View Database" href="/database"><button>View Database</button></a>
-                        <a title="Brands Page" href="/brands"><button>Manage Brands</button></a>
-                        <a><button>New Purchase</button></a>
-                        <a href="/profile"><button>Temp: Profile</button></a>
-                        <a href="/build"><button>Temp: Builder</button></a>
-                    </td>
-                    <td id="main-area">
-                        <Routes>
-                            <Route path="/" element={<Homepage />} />
-                            <Route path="/brands" element={<Brandpage />} />
-                            <Route path="/database" element={<Databasepage />} />
-                            <Route path="/build" element={<Buildingpage />} />
-                            <Route path="/profile/:customerID" element={<ProfilePage />} />
-                        </Routes>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div id="sidenav">
+            <a title="Loyalty Card Tracking Home" href="/">Home</a>
+            <a title="View Database" href="/database">Database</a>
+            <a title="Brands Page" href="/brands">Brands</a>
+            <a>New Purchase</a>
+            <a href="/profile">Temp: Profile</a>
+            <a href="/build">Temp: Builder</a>
+        </div>
     )
 }
 
@@ -176,30 +158,17 @@ export const ProfilePage: React.FC = () => {
     }
 
     return (
-        <div>
+        <>
             <CurrentProfile customerID={customerID} />
             <CustomerCards customerID={customerID} />
-        </div>
+        </>
     );
 };
 
 //Home Page
-export const Homepage = () => {
+export const Home = () => {
     return (
-        <div className='page'>
-            {/* <search>
-                <form>
-                    <input
-                        autoComplete='off'
-                        autoFocus
-                        type="search"
-                        id="search-input"
-                        name="cust-search"
-                        spellCheck="false"
-                        placeholder='Customer Search'
-                    />
-                </form>
-            </search> */}
+        <>
             <div id="live-view"> {/* viewport of all "due cards" */}
                 <SearchnResults />
                 <div id="filter-due">{lorem}</div>
@@ -209,12 +178,12 @@ export const Homepage = () => {
                     <div>{lorem}</div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
 //Manage Brands Page
-export const Brandpage = () => {
+export const Brands = () => {
     return (
         <>
             <h1>Registered Brands</h1>
@@ -224,7 +193,7 @@ export const Brandpage = () => {
 };
 
 //Database Page
-export const Databasepage = () => {
+export const Database = () => {
     return (
         <>
             <h1>Database</h1>
@@ -232,9 +201,7 @@ export const Databasepage = () => {
     );
 };
 
-const Buildingpage = () => (
-    <>
-        <h1>builderpage</h1>
-        <SearchnResults />
-    </>
+export const Builder = () => (
+    <div>
+    </div>
 );

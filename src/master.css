@@ -1,4 +1,4 @@
-@import "./assets/fonts.css";
+@import url('https://fonts.googleapis.com/css2?family=Concert+One&family=Open+Sans&family=Oswald:wght@200..700');
 /* Color Scheme 1
 Charcoal: #264653,
 Persian Green: #2a9d8f,
@@ -9,10 +9,10 @@ Burnt Sienna: #e76f51 */
 :root {
   --white: #f5f5f5;
   --baseT: #363636;
-  --border1: #c37d92;
+  --border1: #c37d9277;
   --back1: #ffe66d;
-  --back2: #9bbec7;
-  --border2: #7bc950;
+  --back2: #9bbec77e;
+  --border2: #7ac95069;
   font: 12pt "Open Sans", Arial;
   text-rendering: optimizeLegibility;
   background-color: var(--white);
@@ -27,74 +27,64 @@ th {
   border-collapse: collapse;
 }
 
-table {
+/* table {
   margin: auto;
-}
+} */
 
-h1 {
+/* h1 {
   font: small-caps 2em "Concert One", sans-serif;
   color: var(--border1);
-}
+} */
 
-hr {
+/* hr {
   width: 100%;
   height: 2px;
   border: none;
   background-color: var(--baseT);
+} */
+
+a {
+  text-decoration: none;
 }
 
-a,
 a:visited {
-  text-decoration: none;
   color: inherit;
 }
 
-#header {
-  position: fixed;
-  display: block;
-}
-
-.topbar {
-  min-height: 5vh;
-  padding: 1rem 1rem 0rem 1rem;
+#topbar {
   display: flex;
-  align-items: space-evenly;
-  font: small-caps bolder 3.2em "Concert One", sans-serif;
-  font-size: 1.5em;
+  border-bottom: 3px solid var(--back2);
+  background-color: var(--white);
+  height: 7vh;
+  width: 100%;
+  margin-bottom: 1.5vh;
+  position: sticky;
+  top: 0;
 }
 
-.topbar.item {
+#topbar * {
   padding: 0rem 1rem;
-  vertical-align: middle;
+  font: small-caps bolder 1.5em "Concert One", sans-serif;
+}
+
+#sidenav {
+  display: flex;
+  flex-direction: column;
+  max-width: 250px;
+  width: 20vw;
+  margin: 0px 10px;
+  position: sticky;
+  top: 9vh;
+  float: left;
+}
+
+#page {
+  min-width: 50vw;
+  display:flex;
 }
 
 #logo {
   height: 1.75em;
-  padding: 0;
-}
-
-.page {
-  min-width: 50vw;
-  margin: 10px auto;
-  min-height: 75vh;
-}
-
-#sidenav, #main-area, .page{
-  margin-top: 5rem;
-}
-#sidenav {
-  width: 16%;
-  /* justify-content: space-evenly; */
-  flex-wrap: wrap;
-  justify-items: stretch;
-  vertical-align: top;
-  position: fixed;
-}
-
-#main-area {
-  width: 83%;
-  min-height: 75vh;
-  vertical-align: top;
   padding: 0;
 }
 
@@ -117,7 +107,7 @@ a:visited {
   background-color: var(--white);
 }
 
-#sidenav button {
+#sidenav a {
   border: 5px solid var(--back2);
   border-radius: 12px;
   padding: 0.6em 1.2em;
@@ -127,18 +117,12 @@ a:visited {
   background-color: var(--back2);
   cursor: pointer;
   transition: border-color, background-color 0.1s;
-  margin: 1rem;
-  margin-top: 0;
-  min-width: 10em;
+  margin-bottom: 1rem;
 }
 
-#sidenav button:hover,
-#sidenav button:active {
+#sidenav a:hover,
+#sidenav a:active {
   background-color: var(--white);
-}
-
-#sidenav button:active {
-  box-shadow: inset;
 }
 
 #live-view {
@@ -180,8 +164,7 @@ a:visited {
   margin: auto;
   width: fit-content;
   padding: 0 5px 8px 0;
-  background: repeating-linear-gradient(90deg, currentColor 0 8%, #0000 0 10%)
-    200% 100%/200% 3px no-repeat;
+  background: repeating-linear-gradient(90deg, currentColor 0 8%, #0000 0 10%) 200% 100%/200% 3px no-repeat;
   animation: l3 2.5s steps(6) infinite;
 }
 

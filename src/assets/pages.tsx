@@ -9,7 +9,6 @@ import { database } from "./client.ts";
 const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lectus dui, rutrum sit amet nibh et, consectetur consequat metus. Nunc ultricies enim nec suscipit mollis. Praesent hendrerit, neque nec porta semper, sem tellus venenatis mi, vel sollicitudin tortor elit in libero. Etiam vitae enim eu velit aliquam fringilla. Mauris eleifend ante nisi, sit amet imperdiet purus sodales vitae. Ut posuere rhoncus quam nec dapibus. Proin ullamcorper mauris et lorem dignissim vehicula vitae mattis orci. In eu pulvinar ex. Curabitur euismod tellus quis enim condimentum vehicula. Fusce ac placerat nisi, in ultrices elit. Nulla fringilla ultrices eros, ut dictum felis luctus in. Donec pulvinar tempor felis, sit amet dignissim metus. Maecenas lectus erat, tempor vitae turpis vel, vulputate ultrices nisi."
 //Navigation Bar
 export const TopBar = () => {
-    const pageName = "";
     return (
         <div id='topbar'>
             <img src={logo} id="logo" />
@@ -112,20 +111,21 @@ export const SearchnResults = () => {
             {/* {loading && <p className='loader' />} */}
             {error && <p style={{ color: "red" }}>{error}</p>}
             <div id="search-results">
-                {results.length > 0 ? (
+                {searchTerm && /* !loading && */ results.length === 0 ? (
+                    <div className="message-screen">This person has yet to start a loyalty card<br/>Press <code>enter</code> to create a new customer profile</div>
+                ) : (
                     results.map((item, index) => (
                         <div
                             key={item.id}
-                            className='result'
+                            className="result"
                             id={index === activeIndex ? "active-result" : ""}
-                            onClick={() => handleResultClick(item.id)}>
-                            {item.first_name} {item.last_name}<br />{item.phone}
+                            onClick={() => handleResultClick(item.id)}
+                        >
+                            <div className="result name">{item.first_name} {item.last_name}</div>
+                            <div className="result phone">{item.phone}</div>
                         </div>
-                    )))
-                    : results.length == 0 ? (
-                        <div className='message-screen'>nothing to show here</div>)
-                        : <div className='message-screen'></div>
-                }
+                    ))
+                )}
             </div>
         </div>
     );
@@ -184,23 +184,89 @@ export const Home = () => {
 //Manage Brands Page
 export const Brands = () => {
     return (
-        <>
+        <div style={{ display: "block" }}>
             <h1>Registered Brands</h1>
             <BrandCards />
-        </>
+        </div>
     );
 };
 
 //Database Page
 export const Database = () => {
     return (
-        <>
+        <div style={{ display: "block" }}>
             <h1>Database</h1>
-        </>
+        </div>
     );
 };
 
 export const Builder = () => (
     <div>
+        <div className="loader"></div>
+        <CreateCustomerProfile />
     </div>
 );
+
+export const CreateCustomerProfile: React.FC = () => {
+    const [firstName, setFirstName] = useState<string>("");
+    const [lastName, setLastName] = useState<string>("");
+    const [phone, setPhone] = useState<string>("");
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        // Log customer data or send it to the database
+        const newCustomer = { firstName, lastName, phone };
+        console.log("New Customer:", newCustomer);
+
+        // Clear form fields after submission
+        setFirstName("");
+        setLastName("");
+        setPhone("");
+    };
+
+    return (
+        <div style={{ maxWidth: "400px", margin: "0 auto" }}>
+            <h2>Create New Customer Profile</h2>
+            <form onSubmit={handleSubmit}>
+                <div style={{ marginBottom: "1rem" }}>
+                    <label htmlFor="first-name">First Name:</label>
+                    <input
+                        id="first-name"
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                        style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem" }}
+                    />
+                </div>
+                <div style={{ marginBottom: "1rem" }}>
+                    <label htmlFor="last-name">Last Name:</label>
+                    <input
+                        id="last-name"
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                        style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem" }}
+                    />
+                </div>
+                <div style={{ marginBottom: "1rem" }}>
+                    <label htmlFor="phone">Phone:</label>
+                    <input
+                        id="phone"
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                        style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem" }}
+                    />
+                </div>
+                <button type="submit" style={{ padding: "0.5rem 1rem", cursor: "pointer" }}>
+                    Create Profile
+                </button>
+            </form>
+        </div>
+    );
+};
+

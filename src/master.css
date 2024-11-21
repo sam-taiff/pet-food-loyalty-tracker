@@ -266,6 +266,14 @@ code {
   transition: all 0.075s;
 }
 
-label{
-  display:inline;
+#create-new-customer button {
+  margin: auto;
+}
+
+#create-new-customer th {
+  text-align: right;
+}
+
+#create-new-customer td, #create-new-customer th {
+  border: 5px solid transparent;
 }

@@ -235,9 +235,9 @@ export const CreateCustomerProfile: React.FC = () => {
 
     return (
         <div>
-            <h2>Create New Customer Profile</h2>
-            <form onSubmit={handleSubmit}>
-                <table>
+            <h2>Create New Customer</h2>
+            <form id="new-customer" onSubmit={handleSubmit}>
+                <table id="create-new-customer">
                     <tbody>
                         <tr>
                             <th>
@@ -282,10 +282,8 @@ export const CreateCustomerProfile: React.FC = () => {
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                <button type="submit">
-                                    Create Profile
-                                </button>
+                            <td colSpan={2}>
+                                <a className="submit" href="#">Create New Profile</a>
                             </td>
                         </tr>
                     </tbody>

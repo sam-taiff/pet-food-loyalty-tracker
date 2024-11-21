@@ -113,7 +113,7 @@ export const SearchnResults = () => {
             {error && <p style={{ color: "red" }}>{error}</p>}
             <div id="search-results">
                 {searchTerm && /* !loading && */ results.length === 0 ? (
-                    <div className="message-screen">This person has yet to start a loyalty card<br/>Press <code>enter</code> to create a new customer profile</div>
+                    <div className="message-screen">This person has yet to start a loyalty card<br />Press <code>enter</code> to create a new customer profile</div>
                 ) : (
                     results.map((item, index) => (
                         <div
@@ -213,60 +213,83 @@ export const CreateCustomerProfile: React.FC = () => {
     const [lastName, setLastName] = useState<string>("");
     const [phone, setPhone] = useState<string>("");
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // Log customer data or send it to the database
-        const newCustomer = { firstName, lastName, phone };
-        console.log("New Customer:", newCustomer);
+        const newRow = {
+            first_name: firstName,
+            last_name: lastName,
+            phone: phone,
+        };
 
+        const insertedRow = await createRow('Customer', newRow);
 
-        // Clear form fields after submission
-        setFirstName("");
-        setLastName("");
-        setPhone("");
+        if (insertedRow) {
+            console.log('Row created successfully:', insertedRow);
+        } else {
+            console.error('Failed to create row');
+        }
+
+        setFirstName(""); setLastName(""); setPhone("");
     };
 
     return (
-        <div style={{ maxWidth: "400px", margin: "0 auto" }}>
+        <div>
             <h2>Create New Customer Profile</h2>
             <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: "1rem" }}>
-                    <label htmlFor="first-name">First Name:</label>
-                    <input
-                        id="first-name"
-                        type="text"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        required
-                        style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem" }}
-                    />
-                </div>
-                <div style={{ marginBottom: "1rem" }}>
-                    <label htmlFor="last-name">Last Name:</label>
-                    <input
-                        id="last-name"
-                        type="text"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        required
-                        style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem" }}
-                    />
-                </div>
-                <div style={{ marginBottom: "1rem" }}>
-                    <label htmlFor="phone">Phone:</label>
-                    <input
-                        id="phone"
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        required
-                        style={{ width: "100%", padding: "0.5rem", marginTop: "0.5rem" }}
-                    />
-                </div>
-                <button type="submit" style={{ padding: "0.5rem 1rem", cursor: "pointer" }}>
-                    Create Profile
-                </button>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>
+                                <label htmlFor="first_name">First Name:</label>
+                            </th>
+                            <td>
+                                <input
+                                    id="first_name"
+                                    type="text"
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    required
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label htmlFor="last_name">Last Name:</label>
+                            </th>
+                            <td>
+                                <input
+                                    id="last_name"
+                                    type="text"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    required
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label htmlFor="phone">Phone:</label>
+                            </th>
+                            <td>
+                                <input
+                                    id="phone"
+                                    type="tel"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    required
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button type="submit">
+                                    Create Profile
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </form>
         </div>
     );

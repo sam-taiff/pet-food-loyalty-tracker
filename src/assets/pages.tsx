@@ -203,12 +203,17 @@ export const Database = () => {
 
 export const Builder = () => (
     <div>
+        <NewBrandForm />
         <div className="loader"></div>
-        <CreateCustomerProfile />
+        <NewCustomerForm />
     </div>
 );
 
-export const CreateCustomerProfile: React.FC = () => {
+export const NewCustomerForm: React.FC = () => {
+    /* create a
+    const [data, setData] = useState<string>("")
+    for every field of the form */
+
     const [firstName, setFirstName] = useState<string>("");
     const [lastName, setLastName] = useState<string>("");
     const [phone, setPhone] = useState<string>("");
@@ -216,12 +221,15 @@ export const CreateCustomerProfile: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        /* assign a {const newRow} where the name of each field is the 
+        same as the one corresponding to the supabase */
         const newRow = {
             first_name: firstName,
             last_name: lastName,
             phone: phone,
         };
 
+        /* check to see if the row was inserted correctly */
         const insertedRow = await createRow('Customer', newRow);
 
         if (insertedRow) {
@@ -230,6 +238,7 @@ export const CreateCustomerProfile: React.FC = () => {
             console.error('Failed to create row');
         }
 
+        /* reset fields to empty */
         setFirstName(""); setLastName(""); setPhone("");
     };
 
@@ -283,7 +292,7 @@ export const CreateCustomerProfile: React.FC = () => {
                         </tr>
                         <tr>
                             <td colSpan={2}>
-                                <a className="submit" href="#">Create New Profile</a>
+                                <button className="submit" type="submit" >Create New Profile</button>
                             </td>
                         </tr>
                     </tbody>
@@ -293,3 +302,169 @@ export const CreateCustomerProfile: React.FC = () => {
     );
 };
 
+export const NewBrandForm: React.FC = () => {
+    /* create a
+        const [data, setData] = useState<string>("")
+        for every field of the form */
+
+    const [brandName, setBrandName] = useState<string>("");
+    const [purchasesNeeded, setPurchasesNeeded] = useState<string>("");
+    const [reward, setReward] = useState<string>("");
+    const [monthsValid, setMonthsValid] = useState<string>("");
+    const [validSizes, setValidSizes] = useState<string>("");
+    const [tcs, setTCS] = useState<string>("");
+    const [logo, setLogo] = useState<string>("");
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        /* assign a {const newRow} where the name of each field is the 
+        same as the one corresponding to the supabase */
+        const newRow = {
+            name: brandName,
+            purchases_needed: purchasesNeeded,
+            reward: reward,
+            months_valid: monthsValid,
+            valid_sizes: validSizes,
+            tcs: tcs,
+            logo: logo
+        };
+
+        /* check to see if the row was inserted correctly */
+        const insertedRow = await createRow('Brand', newRow);
+
+        if (insertedRow) {
+            console.log('Row created successfully:', insertedRow);
+        } else {
+            console.error('Failed to create row');
+        }
+
+        /* reset fields to empty */
+        setBrandName(""); setPurchasesNeeded(""); setReward("");
+        setMonthsValid(""); setValidSizes(""); setTCS(""); setLogo("");
+    };
+
+    return (
+        <div>
+            <h2>Create New Customer</h2>
+            <form id="new-customer" onSubmit={handleSubmit}>
+                <table id="create-new-customer">
+                    <tbody>
+                        <tr>
+                            <th>
+                                <label htmlFor="brand_name">Brand Name:</label>
+                            </th>
+                            <td>
+                                <input
+                                    id="brand_name"
+                                    type="text"
+                                    value={brandName}
+                                    onChange={(e) => setBrandName(e.target.value)}
+                                    required
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label htmlFor="purchases_needed"># Purchases Needed:</label>
+                            </th>
+                            <td>
+                                <input
+                                    id="purchases_needed"
+                                    type="text"
+                                    value={purchasesNeeded}
+                                    onChange={(e) => setPurchasesNeeded(e.target.value)}
+                                    required
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label htmlFor="reward">Reward:</label>
+                            </th>
+                            <td>
+                                <input
+                                    id="reward"
+                                    type="text"
+                                    value={reward}
+                                    onChange={(e) => setReward(e.target.value)}
+                                    required
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label htmlFor="months_valid">Months Valid:</label>
+                            </th>
+                            <td>
+                                <input
+                                    id="months_valid"
+                                    type="text"
+                                    value={monthsValid}
+                                    onChange={(e) => setMonthsValid(e.target.value)}
+                                    required
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label htmlFor="valid_sizes">Valid Sizes:</label>
+                            </th>
+                            <td>
+                                <input
+                                    id="valid_sizes"
+                                    type="text"
+                                    value={validSizes}
+                                    onChange={(e) => setValidSizes(e.target.value)}
+                                    required
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label htmlFor="tcs">T&C's:</label>
+                            </th>
+                            <td>
+                                <input
+                                    id="tcs"
+                                    type="text"
+                                    value={tcs}
+                                    onChange={(e) => setTCS(e.target.value)}
+                                    required
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label htmlFor="logo">Upload Logo:</label>
+                            </th>
+                            <td>
+                                <input
+                                    id="logo"
+                                    type="text"
+                                    value={logo}
+                                    onChange={(e) => setLogo(e.target.value)}
+                                    required
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colSpan={2}>
+                                <button className="submit" type="submit" >Create New Profile</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    );
+}
+
+
+export const SuccessScreen = () => {
+    return (
+        <div>
+            
+        </div>
+    );
+}

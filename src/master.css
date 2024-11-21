@@ -277,3 +277,7 @@ code {
 #create-new-customer td, #create-new-customer th {
   border: 5px solid transparent;
 }
+
+input {
+  font: 1.25em "Concert One";
+}

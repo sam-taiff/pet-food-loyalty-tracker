@@ -1,12 +1,6 @@
 import { database } from "./client.ts";
 import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
 
-import { useState, useEffect } from "react";
-
-interface TableData {
-    [key: string]: any;
-}
-
 export const fetch = async function (
     tableName: string,
     setData: (data: any) => void,

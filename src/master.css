@@ -265,3 +265,7 @@ code {
 .result:hover {
   transition: all 0.075s;
 }
+
+label{
+  display:inline;
+}

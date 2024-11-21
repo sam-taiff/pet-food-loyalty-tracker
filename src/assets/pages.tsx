@@ -1,5 +1,6 @@
 import '../master.css';
 import logo from './sparrow.png';
+import { createRow } from './data-handler.tsx';
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { TableComponent, VertTable, BrandCards, CurrentProfile, CustomerCards, useSupabaseSearch } from './view-components.tsx';
 import React, { useEffect, useState } from 'react';
@@ -218,6 +219,7 @@ export const CreateCustomerProfile: React.FC = () => {
         // Log customer data or send it to the database
         const newCustomer = { firstName, lastName, phone };
         console.log("New Customer:", newCustomer);
+
 
         // Clear form fields after submission
         setFirstName("");

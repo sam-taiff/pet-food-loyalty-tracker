@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { database } from "./client.ts";
+import { fetch } from './data-handler.tsx';
 
 interface TableProps {
   tableName: string;
@@ -17,21 +18,7 @@ export const TableComponent: React.FC<TableProps> = ({ tableName }) => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const { data, error } = await database.from(tableName).select('*');
-
-      if (error) {
-        console.error('Error fetching data:', error);
-      } else {
-        setData(data || []);
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-  }, [tableName]);
+  useEffect(() => {fetch(tableName, setData, setLoading)}, [tableName]);
 
   if (loading) return <p className='loader' />;
 
@@ -66,21 +53,7 @@ export const VertTable: React.FC<TableProps> = ({ tableName }) => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const { data, error } = await database.from(tableName).select('*');
-
-      if (error) {
-        console.error('Error fetching data:', error);
-      } else {
-        setData(data || []);
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-  }, [tableName]);
+  useEffect(() => {fetch(tableName, setData, setLoading)}, [tableName]);
 
   if (loading) return <p className='loader' />;
 
@@ -108,21 +81,7 @@ export const BrandCards = () => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const { data, error } = await database.from("Brand").select('*');
-
-      if (error) {
-        console.error('Error fetching data:', error);
-      } else {
-        setData(data || []);
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-  }, ["Brand"]);
+  useEffect(() => {fetch("Brand", setData, setLoading)}, ["Brand"]);
 
   if (loading) return <p className='loader' />;
   return (
@@ -146,20 +105,7 @@ export const CurrentProfile: React.FC<ProfileProps> = ({ customerID }) => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const { data, error } = await database.from('Customer').select('*').eq('id', customerID)
-      if (error) {
-        console.error('Error fetching data:', error);
-      } else {
-        setData(data || []);
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-  }, ['Customer']);
+  useEffect(() => {fetch("Customer", setData, setLoading, "*", (query) => query.eq('id', customerID))}, ["Customer"]);
 
   if (loading) return <p className='loader' />;
 

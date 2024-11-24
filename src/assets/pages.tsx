@@ -1,14 +1,13 @@
 import '../master.css';
 import logo from './sparrow.png';
 import { createRow } from './data-handler.tsx';
-import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
+import { Route, Routes, useNavigate, useParams, Link, Outlet, useHref } from 'react-router-dom';
 import { TableComponent, VertTable, BrandCards, CurrentProfile, CustomerCards, useSupabaseSearch } from './view-components.tsx';
 import React, { useEffect, useState } from 'react';
-import { database } from "./client.ts";
 
 //placeholder text (DEV USE ONLY)
 const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lectus dui, rutrum sit amet nibh et, consectetur consequat metus. Nunc ultricies enim nec suscipit mollis. Praesent hendrerit, neque nec porta semper, sem tellus venenatis mi, vel sollicitudin tortor elit in libero. Etiam vitae enim eu velit aliquam fringilla. Mauris eleifend ante nisi, sit amet imperdiet purus sodales vitae. Ut posuere rhoncus quam nec dapibus. Proin ullamcorper mauris et lorem dignissim vehicula vitae mattis orci. In eu pulvinar ex. Curabitur euismod tellus quis enim condimentum vehicula. Fusce ac placerat nisi, in ultrices elit. Nulla fringilla ultrices eros, ut dictum felis luctus in. Donec pulvinar tempor felis, sit amet dignissim metus. Maecenas lectus erat, tempor vitae turpis vel, vulputate ultrices nisi."
-//Navigation Bar
+
 export const TopBar = () => {
     return (
         <div id='topbar'>
@@ -21,7 +20,7 @@ export const TopBar = () => {
     )
 }
 
-export const SideNavBar = () => {
+export const SideBar = () => {
     return (
         <div id="sidenav">
             <a title="Loyalty Card Tracking Home" href="/">Home</a>
@@ -133,7 +132,7 @@ export const SearchnResults = () => {
 };
 
 //Profile Page
-export const ProfilePage: React.FC = () => {
+export const ProfilePage = () => {
     const { customerID } = useParams<{ customerID: string }>(); // Extract customerID from URL
 
     const navigate = useNavigate(); // Use the navigate hook
@@ -162,7 +161,21 @@ export const ProfilePage: React.FC = () => {
     return (
         <>
             <CurrentProfile customerID={customerID} />
-            <CustomerCards customerID={customerID} />
+            <table id="tab-view">
+                <thead>
+                    <tr id="tabs">
+                        <a href={useHref(`card`)}>Card View</a>
+                        <a href={useHref(`list`)}>List View</a>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="tab-pages">
+                        <td colSpan={2}>
+                            <Outlet />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </>
     );
 };
@@ -202,7 +215,7 @@ export const Database = () => {
 };
 
 export const Builder = () => (
-    <div>
+    <div style={{ width: "90%" }}>
         <NewBrandForm />
         <div className="loader"></div>
         <NewCustomerForm />
@@ -347,8 +360,8 @@ export const NewBrandForm: React.FC = () => {
     return (
         <div>
             <h2>Create New Customer</h2>
-            <form id="new-customer" onSubmit={handleSubmit}>
-                <table id="create-new-customer">
+            <form id="create-new" onSubmit={handleSubmit}>
+                <table id="create-new-brand">
                     <tbody>
                         <tr>
                             <th>
@@ -374,7 +387,6 @@ export const NewBrandForm: React.FC = () => {
                                     type="text"
                                     value={purchasesNeeded}
                                     onChange={(e) => setPurchasesNeeded(e.target.value)}
-                                    required
                                 />
                             </td>
                         </tr>
@@ -388,7 +400,6 @@ export const NewBrandForm: React.FC = () => {
                                     type="text"
                                     value={reward}
                                     onChange={(e) => setReward(e.target.value)}
-                                    required
                                 />
                             </td>
                         </tr>
@@ -402,7 +413,6 @@ export const NewBrandForm: React.FC = () => {
                                     type="text"
                                     value={monthsValid}
                                     onChange={(e) => setMonthsValid(e.target.value)}
-                                    required
                                 />
                             </td>
                         </tr>
@@ -416,7 +426,6 @@ export const NewBrandForm: React.FC = () => {
                                     type="text"
                                     value={validSizes}
                                     onChange={(e) => setValidSizes(e.target.value)}
-                                    required
                                 />
                             </td>
                         </tr>
@@ -430,27 +439,25 @@ export const NewBrandForm: React.FC = () => {
                                     type="text"
                                     value={tcs}
                                     onChange={(e) => setTCS(e.target.value)}
-                                    required
                                 />
                             </td>
                         </tr>
                         <tr>
                             <th>
-                                <label htmlFor="logo">Upload Logo:</label>
+                                <label htmlFor="brand-logo">Upload Logo:</label>
                             </th>
                             <td>
                                 <input
-                                    id="logo"
+                                    id="brand-logo"
                                     type="text"
                                     value={logo}
                                     onChange={(e) => setLogo(e.target.value)}
-                                    required
                                 />
                             </td>
                         </tr>
                         <tr>
                             <td colSpan={2}>
-                                <button className="submit" type="submit" >Create New Profile</button>
+                                <button className="submit" type="submit" >Submit</button>
                             </td>
                         </tr>
                     </tbody>
@@ -464,7 +471,7 @@ export const NewBrandForm: React.FC = () => {
 export const SuccessScreen = () => {
     return (
         <div>
-            
+
         </div>
     );
 }

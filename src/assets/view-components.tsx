@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { database } from "./client.ts";
+import { database } from './client.ts';
 import { fetch } from './data-handler.tsx';
+import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
+import { useParams } from 'react-router-dom';
 
 interface TableProps {
   tableName: string;
+  columns?: string;
+  filters?: (query: PostgrestFilterBuilder<any, any, any, any, any>) => PostgrestFilterBuilder<any, any, any, any, any>
+  limit?: number;
 }
 
-interface ProfileProps {
-  customerID: string;
-}
+interface ProfileProps { customerID: string; }
 
-interface TableData {
-  [key: string]: any;
-}
+interface TableData { [key: string]: any; }
 
-export const TableComponent: React.FC<TableProps> = ({ tableName }) => {
+export const TableComponent: React.FC<TableProps> = ({ tableName, columns = '*', filters, limit }) => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {fetch(tableName, setData, setLoading)}, [tableName]);
+  useEffect(() => { fetch(tableName, setData, setLoading, columns, filters, limit) }, [tableName]);
 
   if (loading) return <p className='loader' />;
 
@@ -49,11 +50,11 @@ export const TableComponent: React.FC<TableProps> = ({ tableName }) => {
   );
 };
 
-export const VertTable: React.FC<TableProps> = ({ tableName }) => {
+export const VertTable: React.FC<TableProps> = ({ tableName, columns = '*', filters, limit }) => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {fetch(tableName, setData, setLoading)}, [tableName]);
+  useEffect(() => { fetch(tableName, setData, setLoading, columns, filters, limit) }, [tableName]);
 
   if (loading) return <p className='loader' />;
 
@@ -81,7 +82,7 @@ export const BrandCards = () => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {fetch("Brand", setData, setLoading)}, ["Brand"]);
+  useEffect(() => { fetch("Brand", setData, setLoading) }, ["Brand"]);
 
   if (loading) return <p className='loader' />;
   return (
@@ -105,7 +106,7 @@ export const CurrentProfile: React.FC<ProfileProps> = ({ customerID }) => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {fetch("Customer", setData, setLoading, "*", (query) => query.eq('id', customerID))}, ["Customer"]);
+  useEffect(() => { fetch("Customer", setData, setLoading, "*", (query) => query.eq('id', customerID)) }, ["Customer"]);
 
   if (loading) return <p className='loader' />;
 
@@ -113,21 +114,38 @@ export const CurrentProfile: React.FC<ProfileProps> = ({ customerID }) => {
     <>
       {data.map((customer) => (
         <div id='profile'>
-          <span className="name">{customer.first_name + ' ' + customer.last_name}</span>
-          <span className="phone">
+          <div className="name">{customer.first_name + ' ' + customer.last_name}</div>
+          <div className="phone">
             {customer.phone.length < 11
               ? customer.phone.slice(0, 3) + ' ' + customer.phone.slice(3, 6) + ' ' + customer.phone.slice(6)
               : customer.phone.slice(0, 3) + ' ' + customer.phone.slice(3, 7) + ' ' + customer.phone.slice(7)}
-          </span>
+          </div>
         </div>
       ))}
     </>
   );
 };
 
-export const CustomerCards: React.FC<ProfileProps> = ({ customerID }) => {
+function formatTableData(data: Array<{ [key: string]: any }>): Array<{ [key: string]: any }> {
+  if (!data) return [];
+
+  return data.map((item) => ({
+    ...item,
+    date: item.date
+      ? new Intl.DateTimeFormat('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: '2-digit',
+      }).format(new Date(item.date)).replace(/\s+/g, '')
+      : null,
+  }));
+}
+
+export const CustomerCards: React.FC = () => {
   const [groupedData, setGroupedData] = useState<{ [key: string]: TableData[] }>({});
   const [loading, setLoading] = useState(true);
+
+  const { customerID } = useParams<{ customerID: string }>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -144,18 +162,7 @@ export const CustomerCards: React.FC<ProfileProps> = ({ customerID }) => {
       }
 
       // Format the date field
-      const formattedData = data
-        ? data.map((item) => ({
-          ...item,
-          date: item.date
-            ? new Intl.DateTimeFormat('en-GB', {
-              day: '2-digit',
-              month: 'short',
-              year: '2-digit',
-            }).format(new Date(item.date)).replace(/\s+/g, '')
-            : null,
-        }))
-        : [];
+      const formattedData = formatTableData(data);
 
       // Group data by brand_id and species
       const grouped = formattedData.reduce((acc, item) => {
@@ -197,6 +204,75 @@ export const CustomerCards: React.FC<ProfileProps> = ({ customerID }) => {
   );
 };
 
+export function CustListView() {
+  const { customerID } = useParams();
+  const [data, setData] = useState<TableData[]>([]);
+  const [filteredData, setFilteredData] = useState<TableData[]>([]);
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { fetch("Purchase", setData, setLoading, "brand_id,date,size,species,salesperson", (query) => query.eq('customer_id', customerID)) }, ["Purchase"]);
+
+  const formattedData = formatTableData(data);
+
+  useEffect(() => { setFilteredData(formattedData); }, [formattedData]);
+
+  const handleFilterChange = (key: string, value: string) => {
+    const newFilters = { ...filters, [key]: value };
+    setFilters(newFilters);
+
+    const filtered = formattedData.filter((row) =>
+      Object.keys(newFilters).every((filterKey) =>
+        newFilters[filterKey] === "" ? true : row[filterKey] === newFilters[filterKey]
+      )
+    );
+    setFilteredData(filtered);
+  };
+
+  const getUniqueValues = (key: string): string[] => {
+    return [...new Set(formattedData.map((item) => item[key]))];
+  };
+
+  if (loading) return <p className='loader' />;
+
+  const headers = Object.keys(formattedData[0]);
+
+  return (
+    <table id="list-view">
+      <thead>
+        <tr>
+          {headers.map((header) => (
+            <th key={header}>
+              <div>
+                <select
+                  value={filters[header] || ""}
+                  onChange={(e) => handleFilterChange(header, e.target.value)}
+                >
+                  <option value="">All {header.charAt(0).toUpperCase() + header.slice(1)}</option>
+                  {getUniqueValues(header).map((value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {filteredData.map((row, index) => (
+          <tr key={index}>
+            {headers.map((header) => (
+              <td key={header}>{row[header]}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 export const useSupabaseSearch = (searchTerm: string, tableName: string) => {
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -216,7 +292,7 @@ export const useSupabaseSearch = (searchTerm: string, tableName: string) => {
           .from(tableName)
           .select("*")
           .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`);
-          
+
         if (error) throw error;
         setResults(data || []);
       } catch (err: unknown) {

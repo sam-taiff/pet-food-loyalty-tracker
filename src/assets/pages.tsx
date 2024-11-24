@@ -4,6 +4,9 @@ import { createRow } from './data-handler.tsx';
 import { Route, Routes, useNavigate, useParams, Link, Outlet, useHref } from 'react-router-dom';
 import { TableComponent, VertTable, BrandCards, CurrentProfile, CustomerCards, useSupabaseSearch } from './view-components.tsx';
 import React, { useEffect, useState } from 'react';
+import Modal from "react-modal";
+
+Modal.setAppElement("#root");
 
 //placeholder text (DEV USE ONLY)
 const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lectus dui, rutrum sit amet nibh et, consectetur consequat metus. Nunc ultricies enim nec suscipit mollis. Praesent hendrerit, neque nec porta semper, sem tellus venenatis mi, vel sollicitudin tortor elit in libero. Etiam vitae enim eu velit aliquam fringilla. Mauris eleifend ante nisi, sit amet imperdiet purus sodales vitae. Ut posuere rhoncus quam nec dapibus. Proin ullamcorper mauris et lorem dignissim vehicula vitae mattis orci. In eu pulvinar ex. Curabitur euismod tellus quis enim condimentum vehicula. Fusce ac placerat nisi, in ultrices elit. Nulla fringilla ultrices eros, ut dictum felis luctus in. Donec pulvinar tempor felis, sit amet dignissim metus. Maecenas lectus erat, tempor vitae turpis vel, vulputate ultrices nisi."
@@ -214,13 +217,26 @@ export const Database = () => {
     );
 };
 
-export const Builder = () => (
-    <div style={{ width: "90%" }}>
-        <NewBrandForm />
-        <div className="loader"></div>
-        <NewCustomerForm />
-    </div>
-);
+interface TableData { [key: string]: any; }
+
+export const Builder = () => {
+    const { customerID } = useParams();
+    const [data, setData] = useState<TableData[]>([]);
+
+    const handleAddPurchase = (newPurchase: { [key: string]: string }) => {
+        setData((prevData) => [...prevData, { ...newPurchase, customer_id: customerID }]);
+        // Optionally send the new entry to your backend here
+        console.log("New Purchase Added:", newPurchase);
+    };
+    return (
+        <div style={{ width: "90%" }}>
+            <NewBrandForm />
+            <div className="loader"></div>
+            <NewCustomerForm />
+            <AddPurchaseButton onAdd={handleAddPurchase} />
+        </div>
+    );
+};
 
 export const NewCustomerForm: React.FC = () => {
     /* create a
@@ -473,5 +489,201 @@ export const SuccessScreen = () => {
         <div>
 
         </div>
+    );
+}
+
+export function AddPurchaseDialog({ isOpen, onClose, onSubmit }: {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (formData: { [key: string]: string }) => void;
+}) {
+    const [formData, setFormData] = useState({
+        brand_id: "",
+        date: "",
+        size: "",
+        species: "",
+        staff: "",
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onSubmit(formData); // Send data to the parent component
+        setFormData({ brand_id: "", date: "", size: "", species: "", staff: "" });
+        onClose(); // Close the modal after submission
+    };
+
+    return (
+        <Modal
+            isOpen={isOpen}
+            onRequestClose={onClose}
+            contentLabel="Add Purchase"
+            className="modal"
+            overlayClassName="modal-overlay"
+        >
+            <h2>Add New Purchase</h2>
+            <form onSubmit={handleSubmit}>
+                <label>
+                    Brand ID:
+                    <input
+                        type="text"
+                        name="brand_id"
+                        value={formData.brand_id}
+                        onChange={handleChange}
+                        required
+                    />
+                </label>
+                <label>
+                    Date:
+                    <input
+                        type="date"
+                        name="date"
+                        value={formData.date}
+                        onChange={handleChange}
+                        required
+                    />
+                </label>
+                <label>
+                    Size:
+                    <input
+                        type="text"
+                        name="size"
+                        value={formData.size}
+                        onChange={handleChange}
+                        required
+                    />
+                </label>
+                <label>
+                    Species:
+                    <input
+                        type="text"
+                        name="species"
+                        value={formData.species}
+                        onChange={handleChange}
+                        required
+                    />
+                </label>
+                <label>
+                    Staff:
+                    <input
+                        type="text"
+                        name="staff"
+                        value={formData.staff}
+                        onChange={handleChange}
+                        required
+                    />
+                </label>
+                <div className="form-actions">
+                    <button type="submit">Submit</button>
+                    <button type="button" onClick={onClose}>
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </Modal>
+    );
+}
+
+export function AddPurchaseButton({ onAdd }: { onAdd: (newPurchase: { [key: string]: string }) => void }) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const getTodayInNZST = (): string => {
+        const now = new Date();
+        const nzstDate = new Intl.DateTimeFormat("en-GB", {
+            timeZone: "Pacific/Auckland",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        })
+            .format(now)
+            .split("/")
+            .reverse()
+            .join("-"); // Convert DD/MM/YYYY to YYYY-MM-DD
+        return nzstDate;
+    };
+
+    const [formData, setFormData] = useState({
+        brand_id: "",
+        date: getTodayInNZST(),
+        size: "",
+        species: "",
+        staff: "",
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onAdd(formData); // Send new purchase data to the parent
+        setFormData({ brand_id: "", date: getTodayInNZST(), size: "", species: "", staff: "" }); // Reset form
+        setIsModalOpen(false); // Close modal
+    };
+
+    return (
+        <>
+            <button onClick={() => setIsModalOpen(true)}>Add New Purchase</button>
+
+            {isModalOpen && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h2>Add New Purchase</h2>
+                        <form onSubmit={handleSubmit}>
+                            <input
+                                type="text"
+                                name="brand_id"
+                                placeholder="Brand ID"
+                                value={formData.brand_id}
+                                onChange={handleChange}
+                                required
+                            />
+                            <input
+                                type="date"
+                                name="date"
+                                value={formData.date}
+                                onChange={handleChange}
+                                required
+                            />
+                            <input
+                                type="text"
+                                name="size"
+                                placeholder="Size"
+                                value={formData.size}
+                                onChange={handleChange}
+                                required
+                            />
+                            <input
+                                type="text"
+                                name="species"
+                                placeholder="Species"
+                                value={formData.species}
+                                onChange={handleChange}
+                                required
+                            />
+                            <input
+                                type="text"
+                                name="staff"
+                                placeholder="Staff"
+                                value={formData.staff}
+                                onChange={handleChange}
+                                required
+                            />
+                            <div className="modal-actions">
+                                <button type="submit">Submit</button>
+                                <button type="button" onClick={() => setIsModalOpen(false)}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }

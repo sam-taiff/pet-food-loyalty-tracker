@@ -9,10 +9,10 @@ Burnt Sienna: #e76f51 */
 :root {
   --white: #f5f5f5;
   --baseT: #363636;
-  --border1: #c37d92;
-  --back1: #ffe66d;
-  --back2: #9bbec7;
-  --border2: #7ac950;
+  --border1: #e76f51;
+  --back1: #f4a261;
+  --back2: #e9c46a;
+  --border2: #2a9d8f;
   --thickBorder: 5px solid var(--border1);
   --smoothTrans: 0.075s;
   font: 12pt "Open Sans", Arial;
@@ -195,22 +195,22 @@ code {
 }
 
 #purchase-groups {
-  border: 1pt solid var(--baseT);
   display: flex;
   flex-wrap: wrap;
-  background-color: var(--border2);
+  justify-content: space-evenly;
 }
 
 .purchase-group {
   border: 1px solid var(--baseT);
   padding: 8pt 10pt;
   border-radius: 8pt;
-  margin: 0pt 8pt 8pt 0pt;
+  /* margin: 0pt 8pt 8pt 0pt; */
   background-color: var(--white);
+  max-width: 45%;
 }
 
 .purchase-group #card-title {
-  font: small-caps 1.75em "Concert One", sans-serif;
+  font: small-caps 1.5em "Concert One", sans-serif;
   display: flex;
   justify-content: space-evenly;
 }
@@ -222,13 +222,15 @@ code {
 }
 
 #purchase-stamps span {
-  font: small-caps 500 1.5em "Oswald", sans-serif;
+  font: small-caps 500 1.15em "Oswald", sans-serif;
   line-height: 0;
 }
 
 .purchase-stamp {
   border: 1px solid var(--baseT);
+  font: small-caps 1em Tahoma, sans-serif;
   padding: 8pt 10pt;
+  max-width: 25%;
 }
 
 #profile {
@@ -301,11 +303,20 @@ input {
 }
 
 #tabs a:hover {
+  background-color: var(--back2);
+}
+
+#tab-pages td,
+#tab-pages tr, 
+#tab-pages tbody{
+  border: var(--thickBorder);
   background-color: var(--back1);
 }
 
-#tab-pages td {
-  border: var(--thickBorder);
+#list-view,
+#list-view td,
+#list-view th {
+  background-color: var(--white);
 }
 
 #list-view {
@@ -319,4 +330,46 @@ input {
 
 #list-view select {
   font: 1.15em "Concert One", Tahoma;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modal-content input {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
 }

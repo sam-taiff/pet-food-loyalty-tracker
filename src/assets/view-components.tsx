@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { database } from './client.ts';
 import { fetch } from './data-handler.tsx';
 import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
@@ -152,7 +152,7 @@ export const CustomerCards: React.FC = () => {
       setLoading(true);
       const { data, error } = await database
         .from('Purchase')
-        .select('date, size, salesperson, brand_id, species')
+        .select('date, size, staff, brand_id, species')
         .eq('customer_id', customerID);
 
       if (error) {
@@ -192,9 +192,9 @@ export const CustomerCards: React.FC = () => {
           <div id='purchase-stamps'>
             {purchases.map((purchase, index) => (
               <div key={index} className="purchase-stamp">
-                {purchase.date ? <span>{purchase.date}</span> : 'missing date'}<br />
-                {purchase.size || 'missing size'}<br />
-                {purchase.salesperson || 'missing staff init.'}
+                {purchase.date ? <span>{purchase.date}</span> : 'no date'}<br />
+                {purchase.size || 'no size'}<br />
+                {purchase.staff || 'no staff init.'}
               </div>
             ))}
           </div>
@@ -211,29 +211,66 @@ export function CustListView() {
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { fetch("Purchase", setData, setLoading, "brand_id,date,size,species,salesperson", (query) => query.eq('customer_id', customerID)) }, ["Purchase"]);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        await fetch(
+          "Purchase",
+          setData,
+          setLoading,
+          "brand_id,date,size,species,staff",
+          (query) => query.eq("customer_id", customerID)
+        );
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    };
 
-  const formattedData = formatTableData(data);
+    if (customerID) fetchData();
+  }, [customerID]);
 
-  useEffect(() => { setFilteredData(formattedData); }, [formattedData]);
+  const formattedData = useMemo(() => {
+    return data.map((item) => ({
+      ...item,
+      date: item.date
+        ? new Intl.DateTimeFormat("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "2-digit",
+          })
+          .format(new Date(item.date))
+          .replace(/\s+/g, "")
+        : null,
+    }));
+  }, [data]);
+
+  useEffect(() => {
+    const applyFilters = () => {
+      const filtered = formattedData.filter((row) =>
+        Object.keys(filters).every((key) =>
+          filters[key] === "" ? true : row[key] === filters[key]
+        )
+      );
+      setFilteredData(filtered);
+    };
+
+    applyFilters();
+  }, [filters, formattedData]);
+
+  const getUniqueValues = useCallback(
+    (key: string) => {
+      return [...new Set(formattedData.map((item) => item[key]))];
+    },
+    [formattedData]
+  );
 
   const handleFilterChange = (key: string, value: string) => {
-    const newFilters = { ...filters, [key]: value };
-    setFilters(newFilters);
-
-    const filtered = formattedData.filter((row) =>
-      Object.keys(newFilters).every((filterKey) =>
-        newFilters[filterKey] === "" ? true : row[filterKey] === newFilters[filterKey]
-      )
-    );
-    setFilteredData(filtered);
+    setFilters((prevFilters) => ({ ...prevFilters, [key]: value }));
   };
 
-  const getUniqueValues = (key: string): string[] => {
-    return [...new Set(formattedData.map((item) => item[key]))];
-  };
-
-  if (loading) return <p className='loader' />;
+  if (loading) return <p className="loader" />;
 
   const headers = Object.keys(formattedData[0]);
 
@@ -248,7 +285,9 @@ export function CustListView() {
                   value={filters[header] || ""}
                   onChange={(e) => handleFilterChange(header, e.target.value)}
                 >
-                  <option value="">All {header.charAt(0).toUpperCase() + header.slice(1)}</option>
+                  <option value="">
+                    All {header.charAt(0).toUpperCase() + header.slice(1)}
+                  </option>
                   {getUniqueValues(header).map((value) => (
                     <option key={value} value={value}>
                       {value}
@@ -264,7 +303,7 @@ export function CustListView() {
         {filteredData.map((row, index) => (
           <tr key={index}>
             {headers.map((header) => (
-              <td key={header}>{row[header]}</td>
+              <td key={header}>{row[header] as string | number}</td>
             ))}
           </tr>
         ))}
@@ -272,6 +311,7 @@ export function CustListView() {
     </table>
   );
 }
+
 
 export const useSupabaseSearch = (searchTerm: string, tableName: string) => {
   const [results, setResults] = useState<any[]>([]);

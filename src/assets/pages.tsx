@@ -1,9 +1,9 @@
 import '../master.css';
 import logo from './sparrow.png';
 import { createRow } from './data-handler.tsx';
-import { Route, Routes, useNavigate, useParams, Link, Outlet, useHref } from 'react-router-dom';
-import { TableComponent, VertTable, BrandCards, CurrentProfile, CustomerCards, useSupabaseSearch } from './view-components.tsx';
-import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams, Outlet, useHref, useLocation } from 'react-router-dom';
+import { BrandCards, CurrentProfile, CustomerCards, useSupabaseSearch, SimpleSearchBar } from './view-components.tsx';
+import React, { useEffect, useState, useRef } from 'react';
 import Modal from "react-modal";
 
 Modal.setAppElement("#root");
@@ -11,14 +11,35 @@ Modal.setAppElement("#root");
 //placeholder text (DEV USE ONLY)
 const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lectus dui, rutrum sit amet nibh et, consectetur consequat metus. Nunc ultricies enim nec suscipit mollis. Praesent hendrerit, neque nec porta semper, sem tellus venenatis mi, vel sollicitudin tortor elit in libero. Etiam vitae enim eu velit aliquam fringilla. Mauris eleifend ante nisi, sit amet imperdiet purus sodales vitae. Ut posuere rhoncus quam nec dapibus. Proin ullamcorper mauris et lorem dignissim vehicula vitae mattis orci. In eu pulvinar ex. Curabitur euismod tellus quis enim condimentum vehicula. Fusce ac placerat nisi, in ultrices elit. Nulla fringilla ultrices eros, ut dictum felis luctus in. Donec pulvinar tempor felis, sit amet dignissim metus. Maecenas lectus erat, tempor vitae turpis vel, vulputate ultrices nisi."
 
+const PageTitle = ({ title }) => {
+    const location = useLocation();
+
+    useEffect(() => {
+        document.title = title;
+    }, [location, title]);
+
+    return null;
+};
+
 export const TopBar = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false); // Track modal visibility
+
+    const openModal = () => {
+        setIsModalOpen(true); // Open the modal when "New Purchase" is clicked
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false); // Close the modal
+    };
+
     return (
         <div id='topbar'>
             <img src={logo} id="logo" />
-            <a title="Back to Homepage" href='/'>
-                <span>Loyalty Card Tracking</span>
-            </a>
-            {/* <span className='topbar item' id="cust-name">{pageName}</span> */}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a id="site-name" title="Back to Homepage" href='/'><span>Loyalty Card Tracking</span></a>
+            <a id="site-name" style={{ marginLeft: "10vw" }}><span>{document.title}</span></a>
+            <a id="new-purchase-button" onClick={openModal}>New Purchase</a>
+            {isModalOpen && <AddPurchaseButton onAdd={(newPurchase) => createRow("Purchase", newPurchase)} onClose={closeModal} />}
         </div>
     )
 }
@@ -27,11 +48,10 @@ export const SideBar = () => {
     return (
         <div id="sidenav">
             <a title="Loyalty Card Tracking Home" href="/">Home</a>
-            <a title="View Database" href="/database">Database</a>
-            <a title="Brands Page" href="/brands">Brands</a>
-            <a>New Purchase</a>
-            <a href="/profile">Temp: Profile</a>
-            <a href="/build">Temp: Builder</a>
+            <a title="View Database" href="/database">Recent</a>
+            <a title="Brands Page" href="/brands">All Brands</a>
+            {/* <a onClick={openModal}>New Purchase</a> */}
+            <a href="/build">Builder</a>
         </div>
     )
 }
@@ -43,6 +63,7 @@ export const SearchnResults = () => {
     const [activeIndex, setActiveIndex] = useState<number>(-1); // Track the active result index
     const { results, loading, error } = useSupabaseSearch(debouncedSearchTerm, "Customer");
     const navigate = useNavigate();
+    const searchRef = useRef<HTMLInputElement>(null);
 
     // Debounce logic using useEffect
     useEffect(() => {
@@ -55,9 +76,17 @@ export const SearchnResults = () => {
         };
     }, [searchTerm]);
 
-    // Handle keyboard navigation
+    // Handle keyboard navigation and reset on Esc key press
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (!results.length) return;
+        if (e.key === "Escape") {
+            // Reset the search term and active index
+            setSearchTerm("");
+            setActiveIndex(-1); // Reset active index
+            if (searchRef.current) searchRef.current.focus(); // Refocus the search input
+            e.preventDefault(); // Prevent default action for ESC
+        }
+
+        if (!results.length) return; // Don't handle navigation if no results
 
         switch (e.key) {
             case "ArrowDown": // Move down
@@ -98,24 +127,28 @@ export const SearchnResults = () => {
     };
 
     return (
-        <div onKeyDown={handleKeyDown} tabIndex={0} style={{ outline: "none" }}>
+        <div onKeyDown={handleKeyDown} tabIndex={0} style={{ outline: "none", maxWidth: "620px", width: "75%" }}>
             <input
+                ref={searchRef}
                 type="search"
                 value={searchTerm}
                 onChange={handleSearchChange}
-                autoComplete='off'
+                autoComplete="off"
                 autoFocus
                 id="search-input"
                 name="cust-search"
                 spellCheck="false"
-                placeholder='Customer Search'
+                placeholder="Customer Search"
                 aria-label="Search input"
             />
-            {/* {loading && <p className='loader' />} */}
+            {loading && <p className="loader" />}
             {error && <p style={{ color: "red" }}>{error}</p>}
             <div id="search-results">
-                {searchTerm && /* !loading && */ results.length === 0 ? (
-                    <div className="message-screen">This person has yet to start a loyalty card<br />Press <code>enter</code> to create a new customer profile</div>
+                {!loading && searchTerm && results.length === 0 ? (
+                    <div className="message-screen">
+                        This person has yet to start a loyalty card<br />
+                        Press <code>enter</code> to create a new customer profile
+                    </div>
                 ) : (
                     results.map((item, index) => (
                         <div
@@ -124,8 +157,8 @@ export const SearchnResults = () => {
                             id={index === activeIndex ? "active-result" : ""}
                             onClick={() => handleResultClick(item.id)}
                         >
-                            <div className="result name">{item.first_name} {item.last_name}</div>
-                            <div className="result phone">{item.phone}</div>
+                            <div className="name">{item.first_name} {item.last_name}</div>
+                            <div className="phone">{item.phone}</div>
                         </div>
                     ))
                 )}
@@ -133,6 +166,7 @@ export const SearchnResults = () => {
         </div>
     );
 };
+
 
 //Profile Page
 export const ProfilePage = () => {
@@ -202,6 +236,7 @@ export const Home = () => {
 export const Brands = () => {
     return (
         <div style={{ display: "block" }}>
+            <PageTitle title="Manage Brands" />
             <h1>Registered Brands</h1>
             <BrandCards />
         </div>
@@ -211,8 +246,9 @@ export const Brands = () => {
 //Database Page
 export const Database = () => {
     return (
-        <div style={{ display: "block" }}>
-            <h1>Database</h1>
+        <div>
+            <h1>Recent Purchases</h1>
+            <span>showing up to 100 entries</span>
         </div>
     );
 };
@@ -230,18 +266,18 @@ export const Builder = () => {
     };
     return (
         <div style={{ width: "90%" }}>
+            <PageTitle title="Builder" />
             <NewBrandForm />
             <div className="loader"></div>
             <NewCustomerForm />
-            <AddPurchaseButton onAdd={handleAddPurchase} />
         </div>
     );
 };
 
 export const NewCustomerForm: React.FC = () => {
     /* create a
-    const [data, setData] = useState<string>("")
-    for every field of the form */
+                                        const [data, setData] = useState<string>("")
+                                            for every field of the form */
 
     const [firstName, setFirstName] = useState<string>("");
     const [lastName, setLastName] = useState<string>("");
@@ -250,8 +286,8 @@ export const NewCustomerForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        /* assign a {const newRow} where the name of each field is the 
-        same as the one corresponding to the supabase */
+        /* assign a {const newRow} where the name of each field is the
+                                                            same as the one corresponding to the supabase */
         const newRow = {
             first_name: firstName,
             last_name: lastName,
@@ -333,8 +369,8 @@ export const NewCustomerForm: React.FC = () => {
 
 export const NewBrandForm: React.FC = () => {
     /* create a
-        const [data, setData] = useState<string>("")
-        for every field of the form */
+                                                            const [data, setData] = useState<string>("")
+                                                                for every field of the form */
 
     const [brandName, setBrandName] = useState<string>("");
     const [purchasesNeeded, setPurchasesNeeded] = useState<string>("");
@@ -347,8 +383,8 @@ export const NewBrandForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        /* assign a {const newRow} where the name of each field is the 
-        same as the one corresponding to the supabase */
+        /* assign a {const newRow} where the name of each field is the
+                                                                                                same as the one corresponding to the supabase */
         const newRow = {
             name: brandName,
             purchases_needed: purchasesNeeded,
@@ -492,105 +528,85 @@ export const SuccessScreen = () => {
     );
 }
 
-export function AddPurchaseDialog({ isOpen, onClose, onSubmit }: {
-    isOpen: boolean;
-    onClose: () => void;
-    onSubmit: (formData: { [key: string]: string }) => void;
-}) {
-    const [formData, setFormData] = useState({
-        brand_id: "",
-        date: "",
-        size: "",
-        species: "",
-        staff: "",
-    });
+// const FormCustSearch = () => {
+//     const [searchTerm, setSearchTerm] = useState<string>(""); // Actual input value
+//     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>(""); // Debounced value
+//     const [activeIndex, setActiveIndex] = useState<number>(-1); // Track the active result index
+//     const { results, loading, error } = useSupabaseSearch(debouncedSearchTerm, "Customer");
+//     const navigate = useNavigate();
+//     const searchRef = useRef<HTMLInputElement>(null);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
+//     // Debounce logic using useEffect
+//     useEffect(() => {
+//         const handler = setTimeout(() => {
+//             setDebouncedSearchTerm(searchTerm); // Update debounced value after delay
+//         }, 300);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit(formData); // Send data to the parent component
-        setFormData({ brand_id: "", date: "", size: "", species: "", staff: "" });
-        onClose(); // Close the modal after submission
-    };
+//         return () => {
+//             clearTimeout(handler);
+//         };
+//     }, [searchTerm]);
 
-    return (
-        <Modal
-            isOpen={isOpen}
-            onRequestClose={onClose}
-            contentLabel="Add Purchase"
-            className="modal"
-            overlayClassName="modal-overlay"
-        >
-            <h2>Add New Purchase</h2>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Brand ID:
-                    <input
-                        type="text"
-                        name="brand_id"
-                        value={formData.brand_id}
-                        onChange={handleChange}
-                        required
-                    />
-                </label>
-                <label>
-                    Date:
-                    <input
-                        type="date"
-                        name="date"
-                        value={formData.date}
-                        onChange={handleChange}
-                        required
-                    />
-                </label>
-                <label>
-                    Size:
-                    <input
-                        type="text"
-                        name="size"
-                        value={formData.size}
-                        onChange={handleChange}
-                        required
-                    />
-                </label>
-                <label>
-                    Species:
-                    <input
-                        type="text"
-                        name="species"
-                        value={formData.species}
-                        onChange={handleChange}
-                        required
-                    />
-                </label>
-                <label>
-                    Staff:
-                    <input
-                        type="text"
-                        name="staff"
-                        value={formData.staff}
-                        onChange={handleChange}
-                        required
-                    />
-                </label>
-                <div className="form-actions">
-                    <button type="submit">Submit</button>
-                    <button type="button" onClick={onClose}>
-                        Cancel
-                    </button>
-                </div>
-            </form>
-        </Modal>
-    );
-}
+//     // Handle keyboard navigation and reset on Esc key press
+//     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+//         if (e.key === "Escape") {
+//             // Reset the search term and active index
+//             setSearchTerm("");
+//             setActiveIndex(-1); // Reset active index
+//             if (searchRef.current) searchRef.current.focus(); // Refocus the search input
+//             e.preventDefault(); // Prevent default action for ESC
+//         }
 
-export function AddPurchaseButton({ onAdd }: { onAdd: (newPurchase: { [key: string]: string }) => void }) {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+//         if (!results.length) return; // Don't handle navigation if no results
 
+//         switch (e.key) {
+//             case "ArrowDown": // Move down
+//                 setActiveIndex((prevIndex) => Math.min(prevIndex + 1, results.length - 1));
+//                 e.preventDefault(); // Prevent default scrolling
+//                 break;
+
+//             case "ArrowUp": // Move up
+//                 setActiveIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+//                 e.preventDefault();
+//                 break;
+
+//             case "Tab": // Navigate results with Tab
+//                 setActiveIndex((prevIndex) => (prevIndex + 1) % results.length);
+//                 e.preventDefault();
+//                 break;
+
+//             case "Enter": // Select the current result
+//                 if (activeIndex >= 0) {
+//                     navigate(`/profile/${results[activeIndex].id}`);
+//                 } else if (results.length > 0) {
+//                     navigate(`/profile/${results[0].id}`); // Navigate to the first result
+//                 }
+//                 break;
+
+//             default:
+//                 break;
+//         }
+//     };
+
+//     const handleResultClick = (customerID: string) => {
+//         navigate(`/profile/${customerID}`);
+//     };
+
+//     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+//         setSearchTerm(e.target.value);
+//         setActiveIndex(-1); // Reset active index on new search
+//     };
+
+//     return (
+//         <div onKeyDown={handleKeyDown} tabIndex={0} style={{ outline: "none", maxWidth: "620px", width: "75%" }}>
+//             <SimpleSearchBar results={results.map((item, index) => (
+//                         item.first_name+item.last_name+'|'+item.phone
+//                     ))} />;
+//         </div>
+//     );
+// }
+
+export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [key: string]: string }) => void, onClose: () => void }) {
     const getTodayInNZST = (): string => {
         const now = new Date();
         const nzstDate = new Intl.DateTimeFormat("en-GB", {
@@ -614,7 +630,7 @@ export function AddPurchaseButton({ onAdd }: { onAdd: (newPurchase: { [key: stri
         staff: "",
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
@@ -623,67 +639,74 @@ export function AddPurchaseButton({ onAdd }: { onAdd: (newPurchase: { [key: stri
         e.preventDefault();
         onAdd(formData); // Send new purchase data to the parent
         setFormData({ brand_id: "", date: getTodayInNZST(), size: "", species: "", staff: "" }); // Reset form
-        setIsModalOpen(false); // Close modal
+        onClose(); // Close modal after submission
     };
 
     return (
         <>
-            <button onClick={() => setIsModalOpen(true)}>Add New Purchase</button>
-
-            {isModalOpen && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <h2>Add New Purchase</h2>
-                        <form onSubmit={handleSubmit}>
-                            <input
-                                type="text"
-                                name="brand_id"
-                                placeholder="Brand ID"
-                                value={formData.brand_id}
-                                onChange={handleChange}
-                                required
-                            />
-                            <input
-                                type="date"
-                                name="date"
-                                value={formData.date}
-                                onChange={handleChange}
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="size"
-                                placeholder="Size"
-                                value={formData.size}
-                                onChange={handleChange}
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="species"
-                                placeholder="Species"
-                                value={formData.species}
-                                onChange={handleChange}
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="staff"
-                                placeholder="Staff"
-                                value={formData.staff}
-                                onChange={handleChange}
-                                required
-                            />
-                            <div className="modal-actions">
-                                <button type="submit">Submit</button>
-                                <button type="button" onClick={() => setIsModalOpen(false)}>
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+            <div className="modal-overlay">
+                <div className="modal-content">
+                    <h1>New Purchase</h1>
+                    <form onSubmit={handleSubmit}>
+                        {/* <FormCustSearch /> */}
+                        <select
+                            // multiple size={1}
+                            name="brand_id"
+                            value={formData.brand_id}
+                            onChange={handleChange}
+                            required>
+                            <option selected>Select brand</option>
+                            <option>Cherry</option>
+                            <option>Lemon</option>
+                        </select>
+                        {/* <input
+                            type="text"
+                            name="brand_id"
+                            placeholder="Select brand"
+                            value={formData.brand_id}
+                            onChange={handleChange}
+                            required
+                        /> */}
+                        <input
+                            type="date"
+                            name="date"
+                            value={formData.date}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="size"
+                            placeholder="Bag size"
+                            value={formData.size}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="species"
+                            placeholder="Species"
+                            value={formData.species}
+                            onChange={handleChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="staff"
+                            placeholder="Staff init."
+                            value={formData.staff}
+                            onChange={handleChange}
+                            required
+                        />
+                        <div className="modal-actions">
+                            <button type="submit">Submit</button>
+                            <button type="button" onClick={onClose}>
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            )}
+            </div>
         </>
     );
 }

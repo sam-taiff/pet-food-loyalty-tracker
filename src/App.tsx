@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useParams,
+  Navigate
 } from "react-router-dom";
 import {
   Home,
@@ -18,6 +18,7 @@ import {
 import { CustListView, CustomerCards, TableComponent } from './assets/view-components';
 
 function App() {
+  
   return (
     <>
       <Router>
@@ -30,6 +31,7 @@ function App() {
             <Route path="/database" element={<Database />} />
             <Route path="/build" element={<Builder />} />
             <Route path="/profile/:customerID" element={<ProfilePage />}>
+              <Route index element={<CustomerCards />} />
               <Route path="card" element={<CustomerCards />} />
               <Route path="list" element={<CustListView />} />
             </Route>

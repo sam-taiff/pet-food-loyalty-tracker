@@ -29,10 +29,12 @@ export const TopBar = ({ routes }: { routes: { path: string; title: string }[] }
 
     return (
         <div id='topbar'>
-            <img src={logo} id="logo" />
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <a id="site-name" title="Back to Homepage" href='/'><span>Loyalty Card Tracking</span></a>
-            <a id="site-name" style={{ marginLeft: "10vw" }}><span>{headerText}</span></a>
+            <div>
+                <img src={logo} id="logo" />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a id="site-name" title="Back to Homepage" href='/'><span>Loyalty Card Tracking</span></a>
+            </div>
+            <span id="page-name">{headerText}</span>
             <a id="new-purchase-button" onClick={openModal}>New Purchase</a>
             {isModalOpen && <AddPurchaseButton onAdd={(newPurchase) => createRow("Purchase", newPurchase)} onClose={closeModal} />}
         </div>
@@ -45,7 +47,6 @@ export const SideBar = () => {
             <a title="Loyalty Card Tracking Home" href="/">Home</a>
             <a title="View Database" href="/database">Recent</a>
             <a title="Brands Page" href="/brands">All Brands</a>
-            {/* <a onClick={openModal}>New Purchase</a> */}
             <a href="/builder">Builder</a>
         </div>
     )
@@ -231,7 +232,6 @@ export const Home = () => {
 export const Brands = () => {
     return (
         <div style={{ display: "block" }}>
-            <h1>Registered Brands</h1>
             <BrandCards />
         </div>
     );
@@ -241,7 +241,6 @@ export const Brands = () => {
 export const Database = () => {
     return (
         <div>
-            <h1>Recent Purchases</h1>
             <span>showing up to 100 entries</span>
         </div>
     );

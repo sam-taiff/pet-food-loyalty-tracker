@@ -29,7 +29,6 @@ function App() {
           {routes.map((route) => (
             <Route key={route.path} path={route.path} element={route.element} />
           ))}
-          {/* Nested routes for /profile/:customerID */}
           <Route path="/profile/:customerID">
             <Route index element={<CustomerCards />} />
             <Route path="card" element={<CustomerCards />} />

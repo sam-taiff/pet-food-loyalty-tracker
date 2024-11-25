@@ -14,32 +14,31 @@ import {
   Builder,
   ProfilePage
 } from './assets/pages';
+import { routes } from './routes';
 
 import { CustListView, CustomerCards, TableComponent } from './assets/view-components';
 
 function App() {
-  
+
   return (
-    <>
-      <Router>
-        <TopBar />
-        <SideBar />
-        <div id="page">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/brands" element={<Brands />} />
-            <Route path="/database" element={<Database />} />
-            <Route path="/build" element={<Builder />} />
-            <Route path="/profile/:customerID" element={<ProfilePage />}>
-              <Route index element={<CustomerCards />} />
-              <Route path="card" element={<CustomerCards />} />
-              <Route path="list" element={<CustListView />} />
-            </Route>
-          </Routes>
-        </div>
-      </Router >
-    </>
-  )
+    <Router>
+      <TopBar routes={routes} />
+      <SideBar />
+      <div id="page">
+        <Routes>
+          {routes.map((route) => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+          {/* Nested routes for /profile/:customerID */}
+          <Route path="/profile/:customerID">
+            <Route index element={<CustomerCards />} />
+            <Route path="card" element={<CustomerCards />} />
+            <Route path="list" element={<CustListView />} />
+          </Route>
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
 export default App

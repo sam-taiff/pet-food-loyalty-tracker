@@ -11,17 +11,12 @@ Modal.setAppElement("#root");
 //placeholder text (DEV USE ONLY)
 const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin lectus dui, rutrum sit amet nibh et, consectetur consequat metus. Nunc ultricies enim nec suscipit mollis. Praesent hendrerit, neque nec porta semper, sem tellus venenatis mi, vel sollicitudin tortor elit in libero. Etiam vitae enim eu velit aliquam fringilla. Mauris eleifend ante nisi, sit amet imperdiet purus sodales vitae. Ut posuere rhoncus quam nec dapibus. Proin ullamcorper mauris et lorem dignissim vehicula vitae mattis orci. In eu pulvinar ex. Curabitur euismod tellus quis enim condimentum vehicula. Fusce ac placerat nisi, in ultrices elit. Nulla fringilla ultrices eros, ut dictum felis luctus in. Donec pulvinar tempor felis, sit amet dignissim metus. Maecenas lectus erat, tempor vitae turpis vel, vulputate ultrices nisi."
 
-const PageTitle = ({ title }) => {
+export const TopBar = ({ routes }: { routes: { path: string; title: string }[] }) => {
     const location = useLocation();
 
-    useEffect(() => {
-        document.title = title;
-    }, [location, title]);
+    const currentRoute = routes.find((route) => route.path === location.pathname);
+    const headerText = currentRoute ? currentRoute.title : 'Page Not Found';
 
-    return null;
-};
-
-export const TopBar = () => {
     const [isModalOpen, setIsModalOpen] = useState(false); // Track modal visibility
 
     const openModal = () => {
@@ -37,7 +32,7 @@ export const TopBar = () => {
             <img src={logo} id="logo" />
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <a id="site-name" title="Back to Homepage" href='/'><span>Loyalty Card Tracking</span></a>
-            <a id="site-name" style={{ marginLeft: "10vw" }}><span>{document.title}</span></a>
+            <a id="site-name" style={{ marginLeft: "10vw" }}><span>{headerText}</span></a>
             <a id="new-purchase-button" onClick={openModal}>New Purchase</a>
             {isModalOpen && <AddPurchaseButton onAdd={(newPurchase) => createRow("Purchase", newPurchase)} onClose={closeModal} />}
         </div>
@@ -51,7 +46,7 @@ export const SideBar = () => {
             <a title="View Database" href="/database">Recent</a>
             <a title="Brands Page" href="/brands">All Brands</a>
             {/* <a onClick={openModal}>New Purchase</a> */}
-            <a href="/build">Builder</a>
+            <a href="/builder">Builder</a>
         </div>
     )
 }
@@ -236,7 +231,6 @@ export const Home = () => {
 export const Brands = () => {
     return (
         <div style={{ display: "block" }}>
-            <PageTitle title="Manage Brands" />
             <h1>Registered Brands</h1>
             <BrandCards />
         </div>
@@ -266,7 +260,6 @@ export const Builder = () => {
     };
     return (
         <div style={{ width: "90%" }}>
-            <PageTitle title="Builder" />
             <NewBrandForm />
             <div className="loader"></div>
             <NewCustomerForm />

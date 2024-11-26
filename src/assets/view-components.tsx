@@ -408,6 +408,7 @@ export const ShowMostRecent = () => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
   const [custData, setCustData] = useState<TableData[]>([]);
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     // Fetch data and sort by the most recent date
@@ -423,14 +424,15 @@ export const ShowMostRecent = () => {
   useEffect(() => {
     fetch("Customer", setCustData);
   }, []);
+
   const mergeCustomerData = () => {
     return data.map((purchase) => {
       const customer = custData.find((cust) => cust.id === purchase.customer_id);
       const { customer_id, ...rest } = purchase;
       return {
-        customer_first_name: customer?.first_name,
-        customer_surname: customer?.last_name,
-        customer_phone: customer?.phone,
+        first_name: customer?.first_name,
+        last_name: customer?.last_name,
+        phone: customer?.phone,
         ...rest,
       };
     });
@@ -439,9 +441,31 @@ export const ShowMostRecent = () => {
   const mergedData = mergeCustomerData();
   const formattedData = formatTableData(mergedData, true);
 
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>, column: string) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [column]: e.target.value,
+    }));
+  };
+
+  const getUniqueValuesForColumn = (column: string) => {
+    // Get unique values and sort them
+    const uniqueValues = Array.from(new Set(formattedData.map((row) => row[column]?.toString()))).sort();
+    return uniqueValues;
+  };
+
+  const filteredData = formattedData.filter((row) => {
+    return Object.keys(filters).every((column) => {
+      const filterValue = filters[column]?.toLowerCase() || '';
+      const rowValue = (row[column]?.toString() || '').toLowerCase();
+      if (!filterValue) return true; // If no filter, return all rows
+      return rowValue.includes(filterValue);
+    });
+  });
+
   if (loading) return <p className='loader' />;
 
-  if (!data.length) return <p className='message-screen'>Sorry!<br />There's no data available here</p>;
+  if (!formattedData.length) return <p className='message-screen'>Sorry!<br />There's no data available here</p>;
 
   // Get table headers from the data keys
   const headers = Object.keys(formattedData[0]);
@@ -450,18 +474,25 @@ export const ShowMostRecent = () => {
     <table id="most-recent">
       <thead>
         <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Phone</th>
-          <th>Brand</th>
-          <th>Date</th>
-          <th>Size</th>
-          <th>Species</th>
-          <th>Staff</th>
+          {headers.map((header) => (
+            <th key={header}>
+              <select
+                value={filters[header] || ''}
+                onChange={(e) => handleFilterChange(e, header)}
+              >
+                <option value="">{header.replace(/_/g, ' ')}</option>
+                {getUniqueValuesForColumn(header).map((value, index) => (
+                  <option key={index} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </th>
+          ))}
         </tr>
       </thead>
       <tbody>
-        {formattedData.map((row, index) => (
+        {filteredData.map((row, index) => (
           <tr key={index}>
             {headers.map((header) => (
               <td key={header}>{row[header]}</td>
@@ -471,4 +502,4 @@ export const ShowMostRecent = () => {
       </tbody>
     </table>
   );
-}
+};

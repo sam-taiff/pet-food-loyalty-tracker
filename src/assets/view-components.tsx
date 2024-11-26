@@ -453,7 +453,6 @@ export const ShowMostRecent = () => {
           <th>First Name</th>
           <th>Last Name</th>
           <th>Phone</th>
-          <th>ID</th>
           <th>Brand</th>
           <th>Date</th>
           <th>Size</th>

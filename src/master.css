@@ -393,3 +393,8 @@ input {
   justify-content: space-between;
   margin-top: 20px;
 }
+
+#most-recent *{
+border: 1px solid black;
+padding: 5px;
+}

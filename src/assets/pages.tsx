@@ -2,7 +2,7 @@ import '../master.css';
 import logo from './sparrow.png';
 import { createRow } from './data-handler.tsx';
 import { useNavigate, useParams, Outlet, useHref, useLocation } from 'react-router-dom';
-import { BrandCards, CurrentProfile, CustomerCards, useSupabaseSearch, SimpleSearchBar } from './view-components.tsx';
+import { BrandCards, CurrentProfile, CustomerCards, useSupabaseSearch, SimpleSearchBar, TableComponent, ShowMostRecent } from './view-components.tsx';
 import React, { useEffect, useState, useRef } from 'react';
 import Modal from "react-modal";
 
@@ -32,7 +32,7 @@ export const TopBar = ({ routes }: { routes: { path: string; title: string }[] }
             <div>
                 <img src={logo} id="logo" />
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <a id="site-name" title="Back to Homepage" href='/'><span>Loyalty Card Tracking</span></a>
+                <a id="site-name" title="Back to Homepage" href='/'><span>{document.title}</span></a>
             </div>
             <span id="page-name">{headerText}</span>
             <a id="new-purchase-button" onClick={openModal}>New Purchase</a>
@@ -242,6 +242,7 @@ export const Database = () => {
     return (
         <div>
             <span>showing up to 100 entries</span>
+            <ShowMostRecent />
         </div>
     );
 };

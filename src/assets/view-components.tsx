@@ -126,9 +126,9 @@ export const CurrentProfile: React.FC<ProfileProps> = ({ customerID }) => {
   );
 };
 
-function formatTableData(data: Array<{ [key: string]: any }>): Array<{ [key: string]: any }> {
+function formatTableData(data: Array<{ [key: string]: any }>, withSpaces?: boolean): Array<{ [key: string]: any }> {
   if (!data) return [];
-
+  const spaces = withSpaces ? " " : ""; 
   return data.map((item) => ({
     ...item,
     date: item.date
@@ -136,7 +136,7 @@ function formatTableData(data: Array<{ [key: string]: any }>): Array<{ [key: str
         day: '2-digit',
         month: 'short',
         year: '2-digit',
-      }).format(new Date(item.date)).replace(/\s+/g, '')
+      }).format(new Date(item.date)).replace(/\s+/g, spaces)
       : null,
   }));
 };
@@ -236,10 +236,10 @@ export function CustListView() {
       ...item,
       date: item.date
         ? new Intl.DateTimeFormat("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "2-digit",
-          })
+          day: "2-digit",
+          month: "short",
+          year: "2-digit",
+        })
           .format(new Date(item.date))
           .replace(/\s+/g, "")
         : null,
@@ -312,7 +312,6 @@ export function CustListView() {
   );
 };
 
-
 export const useSupabaseSearch = (searchTerm: string, tableName: string) => {
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -353,11 +352,11 @@ export const useSupabaseSearch = (searchTerm: string, tableName: string) => {
   return { results, loading, error };
 };
 
-export const SimpleSearchBar = ( results:string[] ) => {
+export const SimpleSearchBar = (results: string[]) => {
   const [query, setQuery] = useState<string>("");
   const [filteredResults, setFilteredResults] = useState<string[]>([]);
 
-  const handleInputChange = (e:ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
 
@@ -404,3 +403,73 @@ export const SimpleSearchBar = ( results:string[] ) => {
     </div>
   );
 };
+
+export const ShowMostRecent = () => {
+  const [data, setData] = useState<TableData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [custData, setCustData] = useState<TableData[]>([]);
+
+  useEffect(() => {
+    // Fetch data and sort by the most recent date
+    fetch("Purchase", (fetchedData) => {
+      const sortedData = fetchedData.sort(
+        (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      setData(sortedData);
+      setLoading(false);
+    }, setLoading, "customer_id, brand_id, date, size, species, staff");
+  }, []);
+
+  useEffect(() => {
+    fetch("Customer", setCustData);
+  }, []);
+  const mergeCustomerData = () => {
+    return data.map((purchase) => {
+      const customer = custData.find((cust) => cust.id === purchase.customer_id);
+      const { customer_id, ...rest } = purchase;
+      return {
+        customer_first_name: customer?.first_name,
+        customer_surname: customer?.last_name,
+        customer_phone: customer?.phone,
+        ...rest,
+      };
+    });
+  };
+
+  const mergedData = mergeCustomerData();
+  const formattedData = formatTableData(mergedData, true);
+
+  if (loading) return <p className='loader' />;
+
+  if (!data.length) return <p className='message-screen'>Sorry!<br />There's no data available here</p>;
+
+  // Get table headers from the data keys
+  const headers = Object.keys(formattedData[0]);
+
+  return (
+    <table id="most-recent">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Phone</th>
+          <th>ID</th>
+          <th>Brand</th>
+          <th>Date</th>
+          <th>Size</th>
+          <th>Species</th>
+          <th>Staff</th>
+        </tr>
+      </thead>
+      <tbody>
+        {formattedData.map((row, index) => (
+          <tr key={index}>
+            {headers.map((header) => (
+              <td key={header}>{row[header]}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}

@@ -71,7 +71,7 @@ a:visited {
 }
 
 #page-name {
-  color:var(--border1);
+  color: var(--border1);
   font: small-caps 2.25em "Concert One", sans-serif;
 }
 
@@ -394,11 +394,28 @@ input {
   margin-top: 20px;
 }
 
-#most-recent {
-  width:max-content;
+#most-recent th {
+  background-color:var(--back1);
 }
 
-#most-recent *{
-border: 1px solid black;
-padding: 8px;
+#most-recent td {
+  background-color:var(--back2);
+}
+
+#most-recent td,
+#most-recent th {
+  border: 3px solid var(--white);
+  width: min-content;
+}
+
+#most-recent select {
+  font: small-caps 18pt "Concert One";
+  margin: 0;
+  text-align: center;
+  background-color: transparent;
+  border: 0;
+}
+
+#most-recent option {
+  font: 11pt "Concert One", Arial;
 }

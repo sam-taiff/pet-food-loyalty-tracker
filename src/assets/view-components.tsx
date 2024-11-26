@@ -418,7 +418,7 @@ export const ShowMostRecent = () => {
       );
       setData(sortedData);
       setLoading(false);
-    }, setLoading, "customer_id, brand_id, date, size, species, staff");
+    }, setLoading, "customer_id, brand_id, date, size, species, staff", (query) => query, 100);
   }, []);
 
   useEffect(() => {

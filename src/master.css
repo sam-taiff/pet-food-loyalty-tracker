@@ -394,6 +394,10 @@ input {
   margin-top: 20px;
 }
 
+#most-recent {
+  width:max-content;
+}
+
 #most-recent *{
 border: 1px solid black;
 padding: 5px;

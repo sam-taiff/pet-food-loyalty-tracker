@@ -1,8 +1,8 @@
 import '../master.css';
 import logo from './sparrow.png';
-import { createRow } from './data-handler.tsx';
+import { createRow, fetch } from './data-handler.tsx';
 import { useNavigate, useParams, Outlet, useHref, useLocation } from 'react-router-dom';
-import { BrandCards, CurrentProfile, CustomerCards, useSupabaseSearch, SimpleSearchBar, TableComponent, ShowMostRecent } from './view-components.tsx';
+import { BrandCards, CurrentProfile, CustomerCards, useSupabaseSearch, TableComponent, ShowMostRecent } from './view-components.tsx';
 import React, { useEffect, useState, useRef } from 'react';
 import Modal from "react-modal";
 
@@ -247,35 +247,20 @@ export const Database = () => {
     );
 };
 
-interface TableData { [key: string]: any; }
-
 export const Builder = () => {
-    const { customerID } = useParams();
-    const [data, setData] = useState<TableData[]>([]);
-
-    const handleAddPurchase = (newPurchase: { [key: string]: string }) => {
-        setData((prevData) => [...prevData, { ...newPurchase, customer_id: customerID }]);
-        // Optionally send the new entry to your backend here
-        console.log("New Purchase Added:", newPurchase);
-    };
-
-    const closeModal = () => {
-        console.log("closed-form"); // Close the modal
-    };
     return (
         <div style={{ width: "90%" }}>
             <NewBrandForm />
             <div className="loader"></div>
             <NewCustomerForm />
-            <AddPurchaseButton onAdd={(newPurchase) => createRow("Purchase", newPurchase)} onClose={closeModal} />
         </div>
     );
 };
 
 export const NewCustomerForm: React.FC = () => {
     /* create a
-                                        const [data, setData] = useState<string>("")
-                                            for every field of the form */
+        const [data, setData] = useState<string>("")
+    for every field of the form */
 
     const [firstName, setFirstName] = useState<string>("");
     const [lastName, setLastName] = useState<string>("");
@@ -284,8 +269,7 @@ export const NewCustomerForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        /* assign a {const newRow} where the name of each field is the
-                                                            same as the one corresponding to the supabase */
+        /* assign a {const newRow} where the name of each field is the same as the one corresponding to the supabase */
         const newRow = {
             first_name: firstName,
             last_name: lastName,
@@ -526,6 +510,89 @@ export const SuccessScreen = () => {
     );
 }
 
+export const SimpleSearchBar: React.FC = () => {
+    const [nameQuery, setNameQuery] = useState<string>(""); // Search for names
+    const [phoneQuery, setPhoneQuery] = useState<string>(""); // Search for phone numbers
+    const [results, setResults] = useState<any[]>([]); // Store raw customer data
+
+    // Fetch data from the Supabase table when either query updates
+    useEffect(() => {
+        if (nameQuery.trim() === "" && phoneQuery.trim() === "") {
+            setResults([]); // Reset results if both queries are empty
+            return;
+        }
+
+        fetch(
+            "Customer",
+            setResults,
+            undefined, // No loading state needed
+            "*",
+            (queryBuilder) => {
+                let filters = queryBuilder;
+
+                // Add filters for nameQuery and phoneQuery
+                if (nameQuery.trim() !== "") {
+                    filters = filters.or(
+                        `first_name.ilike.%${nameQuery}%,last_name.ilike.%${nameQuery}%`
+                    );
+                }
+
+                if (phoneQuery.trim() !== "") {
+                    filters = filters.ilike("phone", `%${phoneQuery}%`);
+                }
+
+                return filters.order("first_name", { ascending: true });
+            },
+            5 // Limit the number of results
+        );
+    }, [nameQuery, phoneQuery]);
+
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNameQuery(e.target.value); // Update the name query
+    };
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPhoneQuery(e.target.value); // Update the phone query
+    };
+
+    return (
+        <div className="custSearchForm">
+            <div className="searchInput">
+                <input
+                    type="text"
+                    value={nameQuery}
+                    onChange={handleNameChange}
+                    placeholder="Name"
+                />
+                <input
+                    type="text"
+                    value={phoneQuery}
+                    onChange={handlePhoneChange}
+                    placeholder="Phone"
+                />
+            </div>
+            <div className="custResults">
+                {results.length > 0 && results.map((customer, index) => (
+                    <div
+                        className="custResult"
+                        key={index}
+                        onClick={() => {
+                            setNameQuery(`${customer.first_name} ${customer.last_name}`);
+                            setPhoneQuery(customer.phone);
+                        }}>
+                        <span>
+                            {customer.first_name} {customer.last_name}
+                        </span>
+                        <span>
+                            {customer.phone}
+                        </span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
 export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [key: string]: string }) => void, onClose: () => void }) {
     const getTodayInNZST = (): string => {
         const now = new Date();
@@ -549,6 +616,21 @@ export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [
         species: "",
         staff: "",
     });
+
+    const [brands, setBrands] = useState<any[]>([]);
+    useEffect(() => { fetch("Brand", setBrands); }, []);
+
+    const [avail_sizes, setAvail_Sizes] = useState<any[]>([]);
+
+    useEffect(() => {
+        fetch(
+            "Bag",
+            setAvail_Sizes,
+            undefined,
+            "size",
+            (query) => (query.match({ brand: formData.brand_id, species: formData.species }))
+        )
+    }, [formData]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -575,30 +657,52 @@ export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [
                             value={formData.brand_id}
                             onChange={handleChange}
                             required>
-                            <option selected>Select brand</option>
-                            <option>Cherry</option>
-                            <option>Lemon</option>
+                            <option value='' selected disabled hidden>Select brand</option>
+                            {brands.length > 0 && brands.map((brand) => (
+                                <option>{brand.name}</option>
+                            ))}
                         </select>
-                        <input
-                            type="date"
-                            name="date"
-                            value={formData.date}
+                        {/* <input
+                            type="text"
+                            name="species"
+                            placeholder="Species"
+                            value={formData.species}
                             onChange={handleChange}
                             required
-                        />
-                        <input
+                        /> */}
+                        <select
+                            // multiple size={1}
+                            name="species"
+                            value={formData.species}
+                            onChange={handleChange}
+                            required>
+                            <option value='' selected disabled hidden>Select Species</option>
+                            <option>Dog</option>
+                            <option>Cat</option>
+                        </select>
+                        {/* <input
                             type="text"
                             name="size"
                             placeholder="Bag size"
                             value={formData.size}
                             onChange={handleChange}
                             required
-                        />
+                        /> */}
+                        <select
+                            // multiple size={1}
+                            name="size"
+                            value={formData.size}
+                            onChange={handleChange}
+                            required>
+                            <option value='' selected disabled hidden>Bag Size</option>
+                            {avail_sizes.length > 0 && avail_sizes.map((avail_size) => (
+                                <option>{avail_size.size}kg</option>
+                            ))}
+                        </select>
                         <input
-                            type="text"
-                            name="species"
-                            placeholder="Species"
-                            value={formData.species}
+                            type="date"
+                            name="date"
+                            value={formData.date}
                             onChange={handleChange}
                             required
                         />

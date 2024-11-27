@@ -610,6 +610,7 @@ export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [
     };
 
     const [formData, setFormData] = useState({
+        customer_id: "",
         brand_id: "",
         date: getTodayInNZST(),
         size: "",
@@ -640,7 +641,7 @@ export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onAdd(formData); // Send new purchase data to the parent
-        setFormData({ brand_id: "", date: getTodayInNZST(), size: "", species: "", staff: "" }); // Reset form
+        setFormData({ customer_id:"", brand_id: "", date: getTodayInNZST(), size: "", species: "", staff: "" }); // Reset form
         onClose(); // Close modal after submission
     };
 

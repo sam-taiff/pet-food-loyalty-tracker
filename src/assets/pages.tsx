@@ -36,7 +36,7 @@ export const TopBar = ({ routes }: { routes: { path: string; title: string }[] }
             </div>
             <span id="page-name">{headerText}</span>
             <a id="new-purchase-button" onClick={openModal}>New Purchase</a>
-            {isModalOpen && <AddPurchaseButton onAdd={(newPurchase) => createRow("Purchase", newPurchase)} onClose={closeModal} />}
+            {isModalOpen && <AddPurchaseForm onAdd={(newPurchase) => createRow("Purchase", newPurchase)} onClose={closeModal} />}
         </div>
     )
 }
@@ -510,93 +510,13 @@ export const SuccessScreen = () => {
     );
 }
 
-export const SimpleSearchBar: React.FC = () => {
-    const [nameQuery, setNameQuery] = useState<string>(""); // Search for names
-    const [phoneQuery, setPhoneQuery] = useState<string>(""); // Search for phone numbers
-    const [results, setResults] = useState<any[]>([]); // Store raw customer data
-
-    // Fetch data from the Supabase table when either query updates
-    useEffect(() => {
-        if (nameQuery.trim() === "" && phoneQuery.trim() === "") {
-            setResults([]); // Reset results if both queries are empty
-            return;
-        }
-
-        fetch(
-            "Customer",
-            setResults,
-            undefined, // No loading state needed
-            "*",
-            (queryBuilder) => {
-                let filters = queryBuilder;
-
-                // Add filters for nameQuery and phoneQuery
-                if (nameQuery.trim() !== "") {
-                    filters = filters.or(
-                        `first_name.ilike.%${nameQuery}%,last_name.ilike.%${nameQuery}%`
-                    );
-                }
-
-                if (phoneQuery.trim() !== "") {
-                    filters = filters.ilike("phone", `%${phoneQuery}%`);
-                }
-
-                return filters.order("first_name", { ascending: true });
-            },
-            5 // Limit the number of results
-        );
-    }, [nameQuery, phoneQuery]);
-
-    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNameQuery(e.target.value); // Update the name query
-    };
-
-    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPhoneQuery(e.target.value); // Update the phone query
-    };
-
-    return (
-        <div className="custSearchForm">
-            <div className="searchInput">
-                <input
-                    type="text"
-                    value={nameQuery}
-                    onChange={handleNameChange}
-                    placeholder="Name"
-                />
-                <input
-                    type="text"
-                    value={phoneQuery}
-                    onChange={handlePhoneChange}
-                    placeholder="Phone"
-                />
-            </div>
-            <div className="custResults">
-                {results.length > 0 && results.map((customer, index) => (
-                    <div
-                        className="custResult"
-                        key={index}
-                        onClick={() => {
-                            setNameQuery(`${customer.first_name} ${customer.last_name}`);
-                            setPhoneQuery(customer.phone);
-                        }}>
-                        <span>
-                            {customer.first_name} {customer.last_name}
-                        </span>
-                        <span>
-                            {customer.phone}
-                        </span>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
-export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [key: string]: string }) => void, onClose: () => void }) {
+export const AddPurchaseForm: React.FC<{
+    onAdd: (newPurchase: { [key: string]: string }) => void;
+    onClose: () => void;
+}> = ({ onAdd, onClose }) => {
     const getTodayInNZST = (): string => {
         const now = new Date();
-        const nzstDate = new Intl.DateTimeFormat("en-GB", {
+        return new Intl.DateTimeFormat("en-GB", {
             timeZone: "Pacific/Auckland",
             year: "numeric",
             month: "2-digit",
@@ -605,8 +525,7 @@ export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [
             .format(now)
             .split("/")
             .reverse()
-            .join("-"); // Convert DD/MM/YYYY to YYYY-MM-DD
-        return nzstDate;
+            .join("-");
     };
 
     const [formData, setFormData] = useState({
@@ -619,19 +538,58 @@ export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [
     });
 
     const [brands, setBrands] = useState<any[]>([]);
-    useEffect(() => { fetch("Brand", setBrands); }, []);
-
     const [avail_sizes, setAvail_Sizes] = useState<any[]>([]);
+    const [nameQuery, setNameQuery] = useState<string>("");
+    const [phoneQuery, setPhoneQuery] = useState<string>("");
+    const [customerResults, setCustomerResults] = useState<any[]>([]);
 
+    // Fetch brand data
+    useEffect(() => {
+        fetch("Brand", setBrands);
+    }, []);
+
+    // Fetch available sizes based on brand and species
     useEffect(() => {
         fetch(
             "Bag",
             setAvail_Sizes,
             undefined,
             "size",
-            (query) => (query.match({ brand: formData.brand_id, species: formData.species }))
-        )
-    }, [formData]);
+            (query) =>
+                query.match({
+                    brand: formData.brand_id,
+                    species: formData.species,
+                })
+        );
+    }, [formData.brand_id, formData.species]);
+
+    // Fetch customer data based on search queries
+    useEffect(() => {
+        if (nameQuery.trim() === "" && phoneQuery.trim() === "") {
+            setCustomerResults([]);
+            return;
+        }
+
+        fetch(
+            "Customer",
+            setCustomerResults,
+            undefined,
+            "*",
+            (queryBuilder) => {
+                let filters = queryBuilder;
+                if (nameQuery.trim() !== "") {
+                    filters = filters.or(
+                        `first_name.ilike.%${nameQuery}%,last_name.ilike.%${nameQuery}%`
+                    );
+                }
+                if (phoneQuery.trim() !== "") {
+                    filters = filters.ilike("phone", `%${phoneQuery}%`);
+                }
+                return filters.order("first_name", { ascending: true });
+            },
+            5
+        );
+    }, [nameQuery, phoneQuery]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -640,88 +598,126 @@ export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onAdd(formData); // Send new purchase data to the parent
-        setFormData({ customer_id:"", brand_id: "", date: getTodayInNZST(), size: "", species: "", staff: "" }); // Reset form
-        onClose(); // Close modal after submission
+        onAdd(formData);
+        setFormData({
+            customer_id: "",
+            brand_id: "",
+            date: getTodayInNZST(),
+            size: "",
+            species: "",
+            staff: "",
+        });
+        onClose();
     };
 
     return (
-        <>
-            <div className="modal-overlay">
-                <div className="modal-content">
-                    <h1>New Purchase</h1>
-                    <form onSubmit={handleSubmit}>
-                        <SimpleSearchBar />
-                        <select
-                            // multiple size={1}
-                            name="brand_id"
-                            value={formData.brand_id}
-                            onChange={handleChange}
-                            required>
-                            <option value='' selected disabled hidden>Select brand</option>
-                            {brands.length > 0 && brands.map((brand) => (
-                                <option>{brand.name}</option>
-                            ))}
-                        </select>
-                        {/* <input
-                            type="text"
-                            name="species"
-                            placeholder="Species"
-                            value={formData.species}
-                            onChange={handleChange}
-                            required
-                        /> */}
-                        <select
-                            // multiple size={1}
-                            name="species"
-                            value={formData.species}
-                            onChange={handleChange}
-                            required>
-                            <option value='' selected disabled hidden>Select Species</option>
-                            <option>Dog</option>
-                            <option>Cat</option>
-                        </select>
-                        {/* <input
-                            type="text"
-                            name="size"
-                            placeholder="Bag size"
-                            value={formData.size}
-                            onChange={handleChange}
-                            required
-                        /> */}
-                        <select
-                            // multiple size={1}
-                            name="size"
-                            value={formData.size}
-                            onChange={handleChange}
-                            required>
-                            <option value='' selected disabled hidden>Bag Size</option>
-                            {avail_sizes.length > 0 && avail_sizes.map((avail_size) => (
-                                <option>{avail_size.size}kg</option>
-                            ))}
-                        </select>
-                        <input
-                            type="date"
-                            name="date"
-                            value={formData.date}
-                            onChange={handleChange}
-                            required
-                        />
-                        <input
-                            type="text"
-                            name="staff"
-                            placeholder="Staff initial"
-                            value={formData.staff}
-                            onChange={handleChange}
-                            required
-                        />
-                        <div className="modal-actions">
-                            <button type="submit">Submit</button>
-                            <button type="button" onClick={onClose}>Cancel</button>
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <h1>New Purchase</h1>
+                <form onSubmit={handleSubmit}>
+                    <div className="custSearchForm">
+                        <div className="searchInput">
+                            <input
+                                type="text"
+                                value={nameQuery}
+                                onChange={(e) => setNameQuery(e.target.value)}
+                                placeholder="Name"
+                            />
+                            <input
+                                type="text"
+                                value={phoneQuery}
+                                onChange={(e) => setPhoneQuery(e.target.value)}
+                                placeholder="Phone"
+                            />
                         </div>
-                    </form>
-                </div>
+                        <div className="custResults">
+                            {customerResults.length > 0 &&
+                                customerResults.map((customer, index) => (
+                                    <div
+                                        className="custResult"
+                                        key={index}
+                                        onClick={() => {
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                customer_id: customer.id,
+                                            }));
+                                            setNameQuery(
+                                                `${customer.first_name} ${customer.last_name}`
+                                            );
+                                            setPhoneQuery(customer.phone);
+                                        }}
+                                    >
+                                        <span>
+                                            {customer.first_name} {customer.last_name}
+                                        </span>
+                                        <span>{customer.phone}</span>
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+                    <select
+                        name="brand_id"
+                        value={formData.brand_id}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="" disabled hidden>
+                            Select brand
+                        </option>
+                        {brands.map((brand) => (
+                            <option key={brand.id} value={brand.id}>
+                                {brand.name}
+                            </option>
+                        ))}
+                    </select>
+                    <select
+                        name="species"
+                        value={formData.species}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="" disabled hidden>
+                            Select Species
+                        </option>
+                        <option>Dog</option>
+                        <option>Cat</option>
+                    </select>
+                    <select
+                        name="size"
+                        value={formData.size}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="" disabled hidden>
+                            Bag Size
+                        </option>
+                        {avail_sizes.map((avail_size) => (
+                            <option key={avail_size.size}>{avail_size.size}kg</option>
+                        ))}
+                    </select>
+                    <input
+                        type="date"
+                        name="date"
+                        value={formData.date}
+                        onChange={handleChange}
+                        required
+                    />
+                    <input
+                        type="text"
+                        name="staff"
+                        placeholder="Staff initial"
+                        value={formData.staff}
+                        onChange={handleChange}
+                        required
+                    />
+                    <div className="modal-actions">
+                        <button type="submit">Submit</button>
+                        <button type="button" onClick={onClose}>
+                            Cancel
+                        </button>
+                    </div>
+                </form>
             </div>
-        </>
+        </div>
     );
-}
+};

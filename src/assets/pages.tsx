@@ -526,82 +526,6 @@ export const SuccessScreen = () => {
     );
 }
 
-// const FormCustSearch = () => {
-//     const [searchTerm, setSearchTerm] = useState<string>(""); // Actual input value
-//     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>(""); // Debounced value
-//     const [activeIndex, setActiveIndex] = useState<number>(-1); // Track the active result index
-//     const { results, loading, error } = useSupabaseSearch(debouncedSearchTerm, "Customer");
-//     const navigate = useNavigate();
-//     const searchRef = useRef<HTMLInputElement>(null);
-
-//     // Debounce logic using useEffect
-//     useEffect(() => {
-//         const handler = setTimeout(() => {
-//             setDebouncedSearchTerm(searchTerm); // Update debounced value after delay
-//         }, 300);
-
-//         return () => {
-//             clearTimeout(handler);
-//         };
-//     }, [searchTerm]);
-
-//     // Handle keyboard navigation and reset on Esc key press
-//     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-//         // if (e.key === "Escape") {
-//         //     // Reset the search term and active index
-//         //     setSearchTerm("");
-//         //     setActiveIndex(-1); // Reset active index
-//         //     if (searchRef.current) searchRef.current.focus(); // Refocus the search input
-//         //     e.preventDefault(); // Prevent default action for ESC
-//         // }
-
-//         if (!results.length) return; // Don't handle navigation if no results
-
-//         switch (e.key) {
-//             case "ArrowDown": // Move down
-//                 setActiveIndex((prevIndex) => Math.min(prevIndex + 1, results.length - 1));
-//                 e.preventDefault(); // Prevent default scrolling
-//                 break;
-
-//             case "ArrowUp": // Move up
-//                 setActiveIndex((prevIndex) => Math.max(prevIndex - 1, 0));
-//                 e.preventDefault();
-//                 break;
-
-//             case "Tab": // Navigate results with Tab
-//                 setActiveIndex((prevIndex) => (prevIndex + 1) % results.length);
-//                 e.preventDefault();
-//                 break;
-
-//             case "Enter": // Select the current result
-//                 if (activeIndex >= 0) {
-//                     navigate(`/profile/${results[activeIndex].id}`);
-//                 } else if (results.length > 0) {
-//                     navigate(`/profile/${results[0].id}`); // Navigate to the first result
-//                 }
-//                 break;
-
-//             default:
-//                 break;
-//         }
-//     };
-
-//     const handleResultClick = (customerID: string) => {
-//         navigate(`/profile/${customerID}`);
-//     };
-
-//     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-//         setSearchTerm(e.target.value);
-//         setActiveIndex(-1); // Reset active index on new search
-//     };
-
-//     return (
-//         <div onKeyDown={handleKeyDown} tabIndex={0} style={{ outline: "none", maxWidth: "620px", width: "75%" }}>
-//             {/* <SimpleSearchBar results={results.map((item) => `${item.first_name} ${item.last_name} | ${item.phone}`)} /> */}
-//         </div>
-//     );
-// }
-
 export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [key: string]: string }) => void, onClose: () => void }) {
     const getTodayInNZST = (): string => {
         const now = new Date();
@@ -681,7 +605,7 @@ export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [
                         <input
                             type="text"
                             name="staff"
-                            placeholder="Staff init."
+                            placeholder="Staff initial"
                             value={formData.staff}
                             onChange={handleChange}
                             required

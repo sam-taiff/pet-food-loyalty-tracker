@@ -128,7 +128,7 @@ export const CurrentProfile: React.FC<ProfileProps> = ({ customerID }) => {
 
 function formatTableData(data: Array<{ [key: string]: any }>, withSpaces?: boolean): Array<{ [key: string]: any }> {
   if (!data) return [];
-  const spaces = withSpaces ? " " : ""; 
+  const spaces = withSpaces ? " " : "";
   return data.map((item) => ({
     ...item,
     date: item.date
@@ -352,50 +352,70 @@ export const useSupabaseSearch = (searchTerm: string, tableName: string) => {
   return { results, loading, error };
 };
 
-export const SimpleSearchBar = (results: string[]) => {
+export const SimpleSearchBar: React.FC = () => {
   const [query, setQuery] = useState<string>("");
-  const [filteredResults, setFilteredResults] = useState<string[]>([]);
+  const [results, setResults] = useState<any[]>([]); // Store raw customer data
+  const [filteredResults, setFilteredResults] = useState<any[]>([]);
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setQuery(value);
+  // Fetch data from the Supabase table when the query updates
+  useEffect(() => {
+    if (query.trim() === "") {
+      setFilteredResults([]); // Reset filtered results if query is empty
+      return;
+    }
 
-    // Filter results based on the query
-    const filtered = results.filter((item) =>
-      item.toLowerCase().includes(value.toLowerCase())
+    fetch(
+      "Customer",
+      setResults,
+      undefined, // No loading state needed
+      "*",
+      (queryBuilder) =>
+        queryBuilder
+          .or(
+            `first_name.ilike.%${query}%,last_name.ilike.%${query}%,phone.ilike.%${query}%`
+          )
+          .order("first_name", { ascending: true }),
+      20 // Limit the number of results
     );
-    setFilteredResults(filtered);
+  }, [query]);
+
+  useEffect(() => {
+    // Update filtered results when `results` changes
+    setFilteredResults(results);
+  }, [results]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value); // Update the search query
   };
 
   return (
-    <div style={{ position: "relative", width: "300px" }}>
+    <div style={{ width: "100%" }}>
       <input
         type="text"
         value={query}
         onChange={handleInputChange}
-        placeholder="Search..."
+        placeholder="Search Customers"
         style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
       />
       {filteredResults.length > 0 && (
         <div
           style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            right: 0,
+            marginTop: "8px",
             background: "#fff",
             border: "1px solid #ccc",
             borderRadius: "4px",
-            zIndex: 10,
+            padding: "8px",
+            maxHeight: "200px",
+            overflowY: "auto",
           }}
         >
-          {filteredResults.map((result, index) => (
+          {filteredResults.map((customer, index) => (
             <div
               key={index}
               style={{ padding: "8px", cursor: "pointer" }}
-              onClick={() => setQuery(result)}
+              onClick={() => setQuery(`${customer.first_name} ${customer.last_name}`)}
             >
-              {result}
+              {customer.first_name} {customer.last_name} | {customer.phone}
             </div>
           ))}
         </div>

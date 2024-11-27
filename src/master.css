@@ -383,11 +383,15 @@ input {
   font: small-caps 1.5em "Concert One", sans-serif;
   width: 100%;
   margin-bottom: 2%;
-  padding: 1% 0;
+  padding: 2% 0;
   outline: 1px solid var(--back2);
   border:0;
   border-radius: 4px;
   /* text-indent: 1%; */
+}
+
+.modal-content option {
+  font: small-caps 10pt "Concert One", Arial, sans-serif;
 }
 
 .modal-actions {
@@ -398,7 +402,8 @@ input {
 
 .modal-actions button {
   font: small-caps 2em "Concert One";
-  width: 47.5%;
+  width: 49%;
+  padding: 1% 0;
 }
 
 #most-recent th {

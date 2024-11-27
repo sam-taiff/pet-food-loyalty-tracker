@@ -366,7 +366,7 @@ input {
 
 .modal-content {
   background: white;
-  padding: 2% 5%;
+  padding: 10px 5%;
   border-radius: 8px;
   width: 75%;
   max-width: 900px;
@@ -374,36 +374,72 @@ input {
 }
 
 .modal-content h1 {
-  margin-bottom: 2%;
+  margin-bottom: 10px;
   text-align: center;
 }
 
-.modal-content input, .modal-content select {
+.modal-content input,
+.modal-content select {
   display: block;
   font: small-caps 1.5em "Concert One", sans-serif;
   width: 100%;
-  margin-bottom: 2%;
-  padding: 2% 0;
+  margin-bottom: 10px;
+  padding: 10px 0;
   outline: 1px solid var(--back2);
-  border:0;
+  border: 0;
   border-radius: 4px;
-  /* text-indent: 1%; */
+}
+
+.modal-content input {
+  text-indent: 10px;
+}
+
+.modal-content select {
+  padding-left: 10px;
 }
 
 .modal-content option {
   font: small-caps 10pt "Concert One", Arial, sans-serif;
 }
 
+.searchInput {
+  display: flex;
+  justify-content: space-between;
+}
+
+.searchInput input {
+  width: 49%;
+  text-indent: 10px;
+  margin-bottom: 5px;
+}
+
+.custResults {
+  margin-bottom: 5px;
+}
+
+.custResult {
+  display: flex;
+  justify-content: space-around;
+  padding: 5px 0;
+  border-radius: 8px;
+}
+
+.custResult:hover {
+  cursor: pointer;
+  background-color: var(--back2);
+  font-weight: bolder;
+}
+
 .modal-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 2%;
+  margin-top: 10px;
 }
 
 .modal-actions button {
   font: small-caps 2em "Concert One";
   width: 49%;
-  padding: 1% 0;
+  padding: 5px 0;
 }
 
 #most-recent th {

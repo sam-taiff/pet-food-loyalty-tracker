@@ -353,76 +353,95 @@ export const useSupabaseSearch = (searchTerm: string, tableName: string) => {
 };
 
 export const SimpleSearchBar: React.FC = () => {
-  const [query, setQuery] = useState<string>("");
+  const [nameQuery, setNameQuery] = useState<string>(""); // Search for names
+  const [phoneQuery, setPhoneQuery] = useState<string>(""); // Search for phone numbers
   const [results, setResults] = useState<any[]>([]); // Store raw customer data
-  const [filteredResults, setFilteredResults] = useState<any[]>([]);
 
-  // Fetch data from the Supabase table when the query updates
+  // Fetch data from the Supabase table when either query updates
   useEffect(() => {
-    if (query.trim() === "") {
-      setFilteredResults([]); // Reset filtered results if query is empty
+    if (nameQuery.trim() === "" && phoneQuery.trim() === "") {
+      setResults([]); // Reset results if both queries are empty
       return;
     }
+
+    console.log("Fetching with queries:", { nameQuery, phoneQuery });
 
     fetch(
       "Customer",
       setResults,
       undefined, // No loading state needed
       "*",
-      (queryBuilder) =>
-        queryBuilder
-          .or(
-            `first_name.ilike.%${query}%,last_name.ilike.%${query}%,phone.ilike.%${query}%`
-          )
-          .order("first_name", { ascending: true }),
+      (queryBuilder) => {
+        let filters = queryBuilder;
+
+        // Add filters for nameQuery and phoneQuery
+        if (nameQuery.trim() !== "") {
+          filters = filters.or(
+            `first_name.ilike.%${nameQuery}%,last_name.ilike.%${nameQuery}%`
+          );
+        }
+
+        if (phoneQuery.trim() !== "") {
+          filters = filters.ilike("phone", `%${phoneQuery}%`);
+        }
+
+        return filters.order("first_name", { ascending: true });
+      },
       20 // Limit the number of results
     );
-  }, [query]);
+  }, [nameQuery, phoneQuery]);
 
   useEffect(() => {
-    // Update filtered results when `results` changes
-    setFilteredResults(results);
+    console.log("Results fetched:", results);
   }, [results]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value); // Update the search query
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNameQuery(e.target.value); // Update the name query
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhoneQuery(e.target.value); // Update the phone query
   };
 
   return (
-    <div style={{ width: "100%" }}>
-      <input
-        type="text"
-        value={query}
-        onChange={handleInputChange}
-        placeholder="Search Customers"
-        style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
-      />
-      {filteredResults.length > 0 && (
-        <div
-          style={{
-            marginTop: "8px",
-            background: "#fff",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            padding: "8px",
-            maxHeight: "200px",
-            overflowY: "auto",
-          }}
-        >
-          {filteredResults.map((customer, index) => (
-            <div
-              key={index}
-              style={{ padding: "8px", cursor: "pointer" }}
-              onClick={() => setQuery(`${customer.first_name} ${customer.last_name}`)}
-            >
-              {customer.first_name} {customer.last_name} | {customer.phone}
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="custSearchForm">
+      <div className="searchInput">
+        <input
+          type="text"
+          value={nameQuery}
+          onChange={handleNameChange}
+          placeholder="Name"
+        />
+        <input
+          type="text"
+          value={phoneQuery}
+          onChange={handlePhoneChange}
+          placeholder="Phone"
+        />
+      </div>
+      <div className="custResults">
+        {results.length > 0 && results.map((customer, index) => (
+          <div
+            className="custResult"
+            key={index}
+            onClick={() => {
+              setNameQuery(`${customer.first_name} ${customer.last_name}`);
+              setPhoneQuery(customer.phone);
+            }}
+          >
+            <span>
+              {customer.first_name} {customer.last_name}
+            </span>
+            <span>
+              {customer.phone}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
+
 
 export const ShowMostRecent = () => {
   const [data, setData] = useState<TableData[]>([]);

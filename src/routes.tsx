@@ -11,4 +11,5 @@ export const routes = [
     { path: '/brands', element: <Brands />, title: 'Registered Brands' },
     { path: '/database', element: <Database />, title: 'Recent Purchases' },
     { path: '/builder', element: <Builder />, title: 'Builder' },
+    { path: '/profile/:customerID', element: <ProfilePage />, title: '' },
   ];

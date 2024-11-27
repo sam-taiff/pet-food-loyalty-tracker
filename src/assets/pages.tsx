@@ -15,7 +15,7 @@ export const TopBar = ({ routes }: { routes: { path: string; title: string }[] }
     const location = useLocation();
 
     const currentRoute = routes.find((route) => route.path === location.pathname);
-    const headerText = currentRoute ? currentRoute.title : 'Page Not Found';
+    const headerText = currentRoute ? currentRoute.title : '';
 
     const [isModalOpen, setIsModalOpen] = useState(false); // Track modal visibility
 
@@ -167,7 +167,7 @@ export const SearchnResults = () => {
 //Profile Page
 export const ProfilePage = () => {
     const { customerID } = useParams<{ customerID: string }>(); // Extract customerID from URL
-
+    console.log("Params:", useParams());
     const navigate = useNavigate(); // Use the navigate hook
 
     useEffect(() => {
@@ -197,8 +197,8 @@ export const ProfilePage = () => {
             <table id="tab-view">
                 <thead>
                     <tr id="tabs">
-                        <a href={useHref(`card`)}>Card View</a>
-                        <a href={useHref(`list`)}>List View</a>
+                        <a href={useHref('card')}>Card View</a>
+                        <a href={useHref('list')}>List View</a>
                     </tr>
                 </thead>
                 <tbody>
@@ -258,11 +258,16 @@ export const Builder = () => {
         // Optionally send the new entry to your backend here
         console.log("New Purchase Added:", newPurchase);
     };
+
+    const closeModal = () => {
+        console.log("closed-form"); // Close the modal
+    };
     return (
         <div style={{ width: "90%" }}>
             <NewBrandForm />
             <div className="loader"></div>
             <NewCustomerForm />
+            <AddPurchaseButton onAdd={(newPurchase) => createRow("Purchase", newPurchase)} onClose={closeModal} />
         </div>
     );
 };
@@ -652,14 +657,6 @@ export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [
                             <option>Cherry</option>
                             <option>Lemon</option>
                         </select>
-                        {/* <input
-                            type="text"
-                            name="brand_id"
-                            placeholder="Select brand"
-                            value={formData.brand_id}
-                            onChange={handleChange}
-                            required
-                        /> */}
                         <input
                             type="date"
                             name="date"
@@ -693,9 +690,7 @@ export function AddPurchaseButton({ onAdd, onClose }: { onAdd: (newPurchase: { [
                         />
                         <div className="modal-actions">
                             <button type="submit">Submit</button>
-                            <button type="button" onClick={onClose}>
-                                Cancel
-                            </button>
+                            <button type="button" onClick={onClose}>Cancel</button>
                         </div>
                     </form>
                 </div>

@@ -374,32 +374,39 @@ input {
 }
 
 .modal-content h1 {
-  margin-bottom: 20px;
+  margin-bottom: 2%;
   text-align: center;
 }
 
-.modal-content input {
+.modal-content input, .modal-content select {
   display: block;
-  font: small-caps 21pt "Concert One", sans-serif;
+  font: small-caps 1.5em "Concert One", sans-serif;
   width: 100%;
   margin-bottom: 2%;
-  padding: 8px;
-  border: 1px solid #ccc;
+  padding: 1% 0;
+  outline: 1px solid var(--back2);
+  border:0;
   border-radius: 4px;
+  /* text-indent: 1%; */
 }
 
 .modal-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  margin-top: 2%;
+}
+
+.modal-actions button {
+  font: small-caps 2em "Concert One";
+  width: 47.5%;
 }
 
 #most-recent th {
-  background-color:var(--back1);
+  background-color: var(--back1);
 }
 
 #most-recent td {
-  background-color:var(--back2);
+  background-color: var(--back2);
 }
 
 #most-recent td,

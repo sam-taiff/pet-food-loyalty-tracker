@@ -29,7 +29,7 @@ function App() {
           {routes.map((route) => (
             <Route key={route.path} path={route.path} element={route.element} />
           ))}
-          <Route path="/profile/:customerID">
+          <Route path="/profile/:customerID" element={<ProfilePage />}>
             <Route index element={<CustomerCards />} />
             <Route path="card" element={<CustomerCards />} />
             <Route path="list" element={<CustListView />} />

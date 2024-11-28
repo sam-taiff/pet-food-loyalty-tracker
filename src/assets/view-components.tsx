@@ -78,30 +78,6 @@ export const VertTable: React.FC<TableProps> = ({ tableName, columns = '*', filt
   );
 };
 
-export const BrandCards = () => {
-  const [data, setData] = useState<TableData[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => { fetch("Brand", setData, setLoading) }, ["Brand"]);
-
-  if (loading) return <p className='loader' />;
-  return (
-    <table>
-      {data.map((brand) => (
-        <tr>
-          <td>
-            <img className="brand-logo" src={brand.logo} />
-          </td>
-          <td>
-            Buy {brand.purchases_needed}, get a {brand.reward}<br />
-            {brand.months_valid && <p>Valid {brand.months_valid}</p>}
-            {brand.tcs && <p>*{brand.tcs}.</p>}
-          </td>
-        </tr>))}
-    </table>
-  );
-};
-
 export const CurrentProfile: React.FC<ProfileProps> = ({ customerID }) => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);

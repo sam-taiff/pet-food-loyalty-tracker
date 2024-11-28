@@ -2,7 +2,7 @@ import '../master.css';
 import logo from './sparrow.png';
 import { createRow, fetch } from './data-handler.tsx';
 import { useNavigate, useParams, Outlet, useHref, useLocation } from 'react-router-dom';
-import { BrandCards, CurrentProfile, CustomerCards, useSupabaseSearch, TableComponent, ShowMostRecent } from './view-components.tsx';
+import { CurrentProfile, CustomerCards, useSupabaseSearch, TableComponent, ShowMostRecent } from './view-components.tsx';
 import React, { useEffect, useState, useRef } from 'react';
 import Modal from "react-modal";
 
@@ -230,10 +230,26 @@ export const Home = () => {
 
 //Manage Brands Page
 export const Brands = () => {
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+  
+    useEffect(() => { fetch("Brand", setData, setLoading) }, ["Brand"]);
+  
+    if (loading) return <p className='loader' />;
     return (
-        <div style={{ display: "block" }}>
-            <BrandCards />
-        </div>
+      <table>
+        {data.map((brand) => (
+          <tr>
+            <td>
+              <img className="brand-logo" src={brand.logo} />
+            </td>
+            <td>
+              Buy {brand.purchases_needed}, get a {brand.reward}<br />
+              {brand.months_valid && <p>Valid {brand.months_valid} months from earliest purchase.</p>}
+              {brand.tcs && <p>*{brand.tcs}.</p>}
+            </td>
+          </tr>))}
+      </table>
     );
 };
 

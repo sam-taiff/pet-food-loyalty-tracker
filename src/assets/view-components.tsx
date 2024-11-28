@@ -267,8 +267,8 @@ export const CustomerCards: React.FC = () => {
 
 export function CustListView() {
   const { customerID } = useParams();
-  const [data, setData] = useState<TableData[]>([]);
-  const [filteredData, setFilteredData] = useState<TableData[]>([]);
+  const [data, setData] = useState<any[]>([]);
+  const [filteredData, setFilteredData] = useState<any[]>([]);
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(true);
 
@@ -276,13 +276,14 @@ export function CustListView() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        await fetch(
-          "Purchase",
-          setData,
-          setLoading,
-          "brand_id,date,size,species,staff",
-          (query) => query.eq("customer_id", customerID)
-        );
+        await fetch
+          ("Purchase", (fetchedData) => {
+            const sortedData = fetchedData.sort(
+              (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            );
+            setData(sortedData);
+            setLoading(false);
+          }, setLoading, "brand_id,date,size,species,staff", (query) => query.eq("customer_id", customerID));
       } catch (error) {
         console.error("Error fetching data:", error);
         setLoading(false);
@@ -292,20 +293,7 @@ export function CustListView() {
     if (customerID) fetchData();
   }, [customerID]);
 
-  const formattedData = useMemo(() => {
-    return data.map((item) => ({
-      ...item,
-      date: item.date
-        ? new Intl.DateTimeFormat("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "2-digit",
-        })
-          .format(new Date(item.date))
-          .replace(/\s+/g, "")
-        : null,
-    }));
-  }, [data]);
+  const formattedData = formatTableData(data, true);
 
   useEffect(() => {
     const applyFilters = () => {

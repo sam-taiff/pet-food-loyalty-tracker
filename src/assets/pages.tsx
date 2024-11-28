@@ -232,24 +232,26 @@ export const Home = () => {
 export const Brands = () => {
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-  
+
     useEffect(() => { fetch("Brand", setData, setLoading) }, ["Brand"]);
-  
+
     if (loading) return <p className='loader' />;
     return (
-      <table>
-        {data.map((brand) => (
-          <tr>
-            <td>
-              <img className="brand-logo" src={brand.logo} />
-            </td>
-            <td>
-              Buy {brand.purchases_needed}, get a {brand.reward}<br />
-              {brand.months_valid && <p>Valid {brand.months_valid} months from earliest purchase.</p>}
-              {brand.tcs && <p>*{brand.tcs}.</p>}
-            </td>
-          </tr>))}
-      </table>
+        <table id="allBrands">
+            <tbody>
+                {data.map((brand) => (
+                    <tr>
+                        <td id="brandLogo">
+                            <img src={brand.logo} />
+                        </td>
+                        <td id="brandDesc">
+                            Buy {brand.purchases_needed}, get a {brand.reward}
+                            {brand.months_valid && <span><br />Valid <b>{brand.months_valid} months</b> from earliest purchase.</span>}
+                            {brand.tcs && <span><br/>*{brand.tcs}.</span>}
+                        </td>
+                    </tr>))}
+            </tbody>
+        </table>
     );
 };
 

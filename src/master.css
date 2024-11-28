@@ -215,9 +215,29 @@ code {
   }
 }
 
-.brand-logo {
-  max-width: 75%;
-  max-height: 150px;
+#allBrands tr, #allBrands {
+  border: var(--thickBorder);
+  /* border-radius: 50%; */
+}
+
+#allBrands td {
+  vertical-align: middle;
+  width: max-content;
+  height: 120px;
+}
+
+#brandDesc {
+  text-align: left;
+  line-height: 2;
+  padding: 8px 16px;
+}
+
+/* #brandLogo {
+  text-align: right;
+} */
+
+#allBrands img {
+  height: 100%;
 }
 
 #purchase-groups {

@@ -14,6 +14,13 @@ const lorem: string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
 export const TopBar = ({ routes }: { routes: { path: string; title: string }[] }) => {
     const location = useLocation();
 
+    // const customerID = location.pathname
+    // .split("/")
+    // .find((segment) => /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(segment));
+
+    const pathSegments = location.pathname.split("/");
+    const customerID = pathSegments.length > 2 ? pathSegments[2] : undefined;
+
     const currentRoute = routes.find((route) => route.path === location.pathname);
     const headerText = currentRoute ? currentRoute.title : '';
 
@@ -36,7 +43,7 @@ export const TopBar = ({ routes }: { routes: { path: string; title: string }[] }
             </div>
             <span id="page-name">{headerText}</span>
             <a id="new-purchase-button" onClick={openModal}>New Purchase</a>
-            {isModalOpen && <AddPurchaseForm onAdd={(newPurchase) => createRow("Purchase", newPurchase)} onClose={closeModal} />}
+            {isModalOpen && <AddPurchaseForm onAdd={(newPurchase) => createRow("Purchase", newPurchase)} onClose={closeModal} customerID={customerID} />}
         </div>
     )
 }
@@ -167,7 +174,6 @@ export const SearchnResults = () => {
 //Profile Page
 export const ProfilePage = () => {
     const { customerID } = useParams<{ customerID: string }>(); // Extract customerID from URL
-    console.log("Params:", useParams());
     const navigate = useNavigate(); // Use the navigate hook
 
     useEffect(() => {
@@ -247,7 +253,7 @@ export const Brands = () => {
                         <td id="brandDesc">
                             Buy {brand.purchases_needed}, get a {brand.reward}
                             {brand.months_valid && <span><br />Valid <b>{brand.months_valid} months</b> from earliest purchase.</span>}
-                            {brand.tcs && <span><br/>*{brand.tcs}.</span>}
+                            {brand.tcs && <span><br />*{brand.tcs}.</span>}
                         </td>
                     </tr>))}
             </tbody>
@@ -531,7 +537,8 @@ export const SuccessScreen = () => {
 export const AddPurchaseForm: React.FC<{
     onAdd: (newPurchase: { [key: string]: string }) => void;
     onClose: () => void;
-}> = ({ onAdd, onClose }) => {
+    customerID?: string;
+}> = ({ onAdd, onClose, customerID }) => {
     const getTodayInNZST = (): string => {
         const now = new Date();
         return new Intl.DateTimeFormat("en-GB", {
@@ -561,6 +568,15 @@ export const AddPurchaseForm: React.FC<{
     const [phoneQuery, setPhoneQuery] = useState<string>("");
     const [customerResults, setCustomerResults] = useState<any[]>([]);
 
+    useEffect(() => {
+        if (customerID) {
+            setFormData((prevData) => ({
+                ...prevData,
+                customer_id: customerID,
+            }));
+        }
+    }, [customerID]);
+
     // Fetch brand data
     useEffect(() => {
         fetch("Brand", setBrands);
@@ -580,6 +596,24 @@ export const AddPurchaseForm: React.FC<{
                 })
         );
     }, [formData.brand_id, formData.species]);
+
+    useEffect(() => {
+        if (customerID) {
+            fetch(
+                "Customer",
+                (data) => {
+                    if (data && data.length > 0) {
+                        const customer = data[0];
+                        setNameQuery(`${customer.first_name} ${customer.last_name}`);
+                        setPhoneQuery(customer.phone);
+                    }
+                },
+                undefined,
+                "id, first_name, last_name, phone",
+                (query) => query.eq("id", customerID)
+            );
+        }
+    }, [customerID]);
 
     // Fetch customer data based on search queries
     useEffect(() => {
@@ -626,6 +660,7 @@ export const AddPurchaseForm: React.FC<{
             staff: "",
         });
         onClose();
+        console.log("New Purchase Successfully Created")
     };
 
     return (

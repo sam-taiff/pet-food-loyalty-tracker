@@ -78,23 +78,108 @@ export const VertTable: React.FC<TableProps> = ({ tableName, columns = '*', filt
   );
 };
 
+
 export const CurrentProfile: React.FC<ProfileProps> = ({ customerID }) => {
   const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [editedValue, setEditedValue] = useState<string>('');
 
-  useEffect(() => { fetch("Customer", setData, setLoading, "*", (query) => query.eq('id', customerID)) }, ["Customer"]);
+  useEffect(() => {
+    fetch("Customer", setData, setLoading, "*", (query) => query.eq('id', customerID));
+  }, ["Customer"]);
+
+  const handleEdit = (field: string, value: string) => {
+    setEditingField(field);
+    setEditedValue(value);
+  };
+
+  const handleSave = async (customerId: string, field: string) => {
+    // Update the database
+    await updateCustomer(customerId, { [field]: editedValue });
+
+    // Update local data
+    setData((prevData) =>
+      prevData.map((customer) =>
+        customer.id === customerId ? { ...customer, [field]: editedValue } : customer
+      )
+    );
+
+    setEditingField(null);
+  };
+
+  const updateCustomer = async (id: string, updates: { [key: string]: string }) => {
+    const { error } = await database
+      .from("Customer")
+      .update(updates)
+      .eq("id", id);
+    if (error) console.error("Error updating customer:", error);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, customerId: string, field: string) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSave(customerId, field);
+    }
+  };
 
   if (loading) return <p className='loader' />;
 
   return (
     <>
       {data.map((customer) => (
-        <div id='profile'>
-          <div className="name">{customer.first_name + ' ' + customer.last_name}</div>
+        <div id="profile" key={customer.id}>
+          <div className="name">
+            {editingField === `first_name-${customer.id}` ? (
+              <input
+                type="text"
+                value={editedValue}
+                onChange={(e) => setEditedValue(e.target.value)}
+                onBlur={() => handleSave(customer.id, "first_name")}
+                onKeyDown={(e) => handleKeyDown(e, customer.id, "first_name")}
+                size={editedValue.length || customer.first_name.length} // Adjust input size
+                autoFocus
+              />
+            ) : (
+              <span onDoubleClick={() => handleEdit(`first_name-${customer.id}`, customer.first_name)}>
+                {customer.first_name}
+              </span>
+            )}
+            {" "}
+            {editingField === `last_name-${customer.id}` ? (
+              <input
+                type="text"
+                value={editedValue}
+                onChange={(e) => setEditedValue(e.target.value)}
+                onBlur={() => handleSave(customer.id, "last_name")}
+                onKeyDown={(e) => handleKeyDown(e, customer.id, "last_name")}
+                size={editedValue.length || customer.last_name.length} // Adjust input size
+                autoFocus
+              />
+            ) : (
+              <span onDoubleClick={() => handleEdit(`last_name-${customer.id}`, customer.last_name)}>
+                {customer.last_name}
+              </span>
+            )}
+          </div>
           <div className="phone">
-            {customer.phone.length < 11
-              ? customer.phone.slice(0, 3) + ' ' + customer.phone.slice(3, 6) + ' ' + customer.phone.slice(6)
-              : customer.phone.slice(0, 3) + ' ' + customer.phone.slice(3, 7) + ' ' + customer.phone.slice(7)}
+            {editingField === `phone-${customer.id}` ? (
+              <input
+                type="text"
+                value={editedValue}
+                onChange={(e) => setEditedValue(e.target.value)}
+                onBlur={() => handleSave(customer.id, "phone")}
+                onKeyDown={(e) => handleKeyDown(e, customer.id, "phone")}
+                size={editedValue.length || customer.phone.length} // Adjust input size
+                autoFocus
+              />
+            ) : (
+              <span onDoubleClick={() => handleEdit(`phone-${customer.id}`, customer.phone)}>
+                {customer.phone.length < 11
+                  ? customer.phone.slice(0, 3) + ' ' + customer.phone.slice(3, 6) + ' ' + customer.phone.slice(6)
+                  : customer.phone.slice(0, 3) + ' ' + customer.phone.slice(3, 7) + ' ' + customer.phone.slice(7)}
+              </span>
+            )}
           </div>
         </div>
       ))}

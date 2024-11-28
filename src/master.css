@@ -287,6 +287,11 @@ code {
   justify-content: space-around;
 }
 
+#profile input{
+  font: small-caps 1em "Concert One", sans-serif;
+  width:min-content;
+}
+
 #tab-view,
 #profile {
   width: 90%;

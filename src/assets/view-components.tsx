@@ -454,9 +454,17 @@ export const useSupabaseSearch = (searchTerm: string, tableName: string) => {
 
 export const ShowMostRecent = () => {
   // const [data, setData] = useState<TableData[]>([]);
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   // const [custData, setCustData] = useState<TableData[]>([]);
-  // const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
+
+  const [recentData, setRecentData] = useState<any[]>([]);
+  useEffect(() => { 
+    getRECENT(setRecentData);
+    setLoading(false); 
+  }, []);
+  const recentHeaders = recentData.length > 0 ? Object.keys(recentData[0]) : [];
+  console.log("recentData length : ", recentData.length);
 
   // useEffect(() => {
   //   // Fetch data and sort by the most recent date
@@ -489,39 +497,34 @@ export const ShowMostRecent = () => {
   // const mergedData = mergeCustomerData();
   // const formattedData = formatTableData(mergedData, true);
 
-  // const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>, column: string) => {
-  //   setFilters((prevFilters) => ({
-  //     ...prevFilters,
-  //     [column]: e.target.value,
-  //   }));
-  // };
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>, column: string) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [column]: e.target.value,
+    }));
+  };
 
-  // const getUniqueValuesForColumn = (column: string) => {
-  //   // Get unique values and sort them
-  //   const uniqueValues = Array.from(new Set(formattedData.map((row) => row[column]?.toString()))).sort();
-  //   return uniqueValues;
-  // };
+  const getUniqueValuesForColumn = (column: string) => {
+    // Get unique values and sort them
+    const uniqueValues = Array.from(new Set(recentData.map((row) => row[column]?.toString()))).sort();
+    return uniqueValues;
+  };
 
-  // const filteredData = formattedData.filter((row) => {
-  //   return Object.keys(filters).every((column) => {
-  //     const filterValue = filters[column]?.toLowerCase() || '';
-  //     const rowValue = (row[column]?.toString() || '').toLowerCase();
-  //     if (!filterValue) return true; // If no filter, return all rows
-  //     return rowValue.includes(filterValue);
-  //   });
-  // });
+  const filteredData = recentData.filter((row) => {
+    return Object.keys(filters).every((column) => {
+      const filterValue = filters[column]?.toLowerCase() || '';
+      const rowValue = (row[column]?.toString() || '').toLowerCase();
+      if (!filterValue) return true; // If no filter, return all rows
+      return rowValue.includes(filterValue);
+    });
+  });
 
-  // if (loading) return <p className='loader' />;
+  if (loading) return <p className='loader' />;
 
-  // if (!formattedData.length) return <p className='message-screen'>Sorry!<br />There's no data available here</p>;
+  if (!recentData.length) return <p className='message-screen'>Sorry!<br />There's no data available here</p>;
 
   // // Get table headers from the data keys
   // const headers = Object.keys(formattedData[0]);
-
-  const [recentData, setRecentData] = useState<any[]>([]);
-  useEffect(() => { getRECENT(setRecentData); }, []);
-  const recentHeaders = recentData.length > 0 ? Object.keys(recentData[0]) : [];
-  console.log("recentData length : ", recentData.length);
 
   return (
     <table id="most-recent">
@@ -555,12 +558,32 @@ export const ShowMostRecent = () => {
       <thead>
         <tr>
           {recentHeaders.map((header) => (
-            <th key={header}>{header.replace(/_/g, ' ')}</th>
+            <th key={header}>
+              {/* {header.replace(/_/g, ' ')} */}
+              <select
+                value={filters[header] || ''}
+                onChange={(e) => handleFilterChange(e, header)}
+              >
+                <option value="">{header.replace(/_/g, ' ')}</option>
+                {getUniqueValuesForColumn(header).map((value, index) => (
+                  <option key={index} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+            </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {recentData.length > 0 ? (
+        {filteredData.map((row, index) => (
+          <tr key={index}>
+            {recentHeaders.map((header) => (
+              <td key={header}>{row[header]}</td>
+            ))}
+          </tr>
+        ))}
+        {/* {recentData.length > 0 ? (
           recentData.map((row, index) => (
             <tr key={index}>
               {recentHeaders.map((header) => (
@@ -572,7 +595,7 @@ export const ShowMostRecent = () => {
           <tr>
             <td colSpan={recentHeaders.length || 1}>No recent data available</td>
           </tr>
-        )}
+        )} */}
       </tbody>
     </table>
   );

@@ -52,3 +52,15 @@ export const createRow = async function (
 
     return insertedData?.[0] || null;
 }
+
+export const getRECENT = async (setData: (data: any[]) => void) => {
+    const { data, error } = await database.rpc('getRECENT');
+    if (error) {
+        console.error('Error getting most recent purchases:', error);
+        setData([]);
+    } else {
+        console.log('Fetched data:', data);
+        // setData(data || []);
+        setData(Array.isArray(data) ? data : [data]);
+    }
+}

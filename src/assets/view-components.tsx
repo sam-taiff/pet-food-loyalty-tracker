@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback, ChangeEventHandler, ChangeEvent } from 'react';
 import { database } from './client.ts';
-import { fetch } from './data-handler.tsx';
+import { fetch, getRECENT } from './data-handler.tsx';
 import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 import { useParams } from 'react-router-dom';
 
@@ -265,12 +265,58 @@ export const CustomerCards: React.FC = () => {
   );
 };
 
+function getCustData(customerID: string | undefined) {
+  // const { customerID } = useParams<{ customerID: string }>();
+  const [data, setData] = useState<any[]>([]);
+  const [detData, setDetData] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!customerID) return;
+    fetch("Purchase", (fetchedData) => {
+      const sortedData = fetchedData.sort(
+        (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      setData(sortedData);
+    }, undefined, "bag_id, date, staff", (query) => query.eq("customer_id", customerID));
+  }, [customerID]);
+
+  const formattedData = formatTableData(data, true);
+
+  useEffect(() => {
+    if (formattedData.length === 0) return; // Prevent unnecessary fetch calls
+    fetch(
+      "Bag",
+      setDetData,
+      undefined,
+      "brand, species, product, size",
+      (query) => query.in("id", formattedData.map((item) => item.bag_id))
+    );
+  }, [formattedData]);
+
+  useEffect(() => {
+    if (detData.length > 0) {
+      console.log("This is supposed to be bag data:", detData);
+    }
+  }, [detData]);
+
+  return (
+    <>hello</>
+  );
+};
+
 export function CustListView() {
   const { customerID } = useParams();
   const [data, setData] = useState<any[]>([]);
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(true);
+
+  //   const custData = getCustData(customerID);
+  // //   useEffect(() => {
+  // //   if (custData) {
+  // //     console.log("This is supposed to be bag data:", custData);
+  // //   }
+  // // }, [custData]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -323,6 +369,8 @@ export function CustListView() {
 
   const headers = Object.keys(formattedData[0]);
 
+
+
   return (
     <table id="list-view">
       <thead>
@@ -356,6 +404,9 @@ export function CustListView() {
             ))}
           </tr>
         ))}
+        <tr>
+          <td>this is some data : </td>
+        </tr>
       </tbody>
     </table>
   );
@@ -402,74 +453,79 @@ export const useSupabaseSearch = (searchTerm: string, tableName: string) => {
 };
 
 export const ShowMostRecent = () => {
-  const [data, setData] = useState<TableData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [custData, setCustData] = useState<TableData[]>([]);
-  const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  // const [data, setData] = useState<TableData[]>([]);
+  // const [loading, setLoading] = useState(true);
+  // const [custData, setCustData] = useState<TableData[]>([]);
+  // const [filters, setFilters] = useState<{ [key: string]: string }>({});
 
-  useEffect(() => {
-    // Fetch data and sort by the most recent date
-    fetch("Purchase", (fetchedData) => {
-      const sortedData = fetchedData.sort(
-        (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-      setData(sortedData);
-      setLoading(false);
-    }, setLoading, "customer_id, brand_id, date, size, species, staff", (query) => query, 100);
-  }, []);
+  // useEffect(() => {
+  //   // Fetch data and sort by the most recent date
+  //   fetch("Purchase", (fetchedData) => {
+  //     const sortedData = fetchedData.sort(
+  //       (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  //     );
+  //     setData(sortedData);
+  //     setLoading(false);
+  //   }, setLoading, "customer_id, brand_id, date, size, species, staff", (query) => query, 100);
+  // }, []);
 
-  useEffect(() => {
-    fetch("Customer", setCustData);
-  }, []);
+  // useEffect(() => {
+  //   fetch("Customer", setCustData);
+  // }, []);
 
-  const mergeCustomerData = () => {
-    return data.map((purchase) => {
-      const customer = custData.find((cust) => cust.id === purchase.customer_id);
-      const { customer_id, ...rest } = purchase;
-      return {
-        first_name: customer?.first_name,
-        last_name: customer?.last_name,
-        phone: customer?.phone,
-        ...rest,
-      };
-    });
-  };
+  // const mergeCustomerData = () => {
+  //   return data.map((purchase) => {
+  //     const customer = custData.find((cust) => cust.id === purchase.customer_id);
+  //     const { customer_id, ...rest } = purchase;
+  //     return {
+  //       first_name: customer?.first_name,
+  //       last_name: customer?.last_name,
+  //       phone: customer?.phone,
+  //       ...rest,
+  //     };
+  //   });
+  // };
 
-  const mergedData = mergeCustomerData();
-  const formattedData = formatTableData(mergedData, true);
+  // const mergedData = mergeCustomerData();
+  // const formattedData = formatTableData(mergedData, true);
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>, column: string) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [column]: e.target.value,
-    }));
-  };
+  // const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>, column: string) => {
+  //   setFilters((prevFilters) => ({
+  //     ...prevFilters,
+  //     [column]: e.target.value,
+  //   }));
+  // };
 
-  const getUniqueValuesForColumn = (column: string) => {
-    // Get unique values and sort them
-    const uniqueValues = Array.from(new Set(formattedData.map((row) => row[column]?.toString()))).sort();
-    return uniqueValues;
-  };
+  // const getUniqueValuesForColumn = (column: string) => {
+  //   // Get unique values and sort them
+  //   const uniqueValues = Array.from(new Set(formattedData.map((row) => row[column]?.toString()))).sort();
+  //   return uniqueValues;
+  // };
 
-  const filteredData = formattedData.filter((row) => {
-    return Object.keys(filters).every((column) => {
-      const filterValue = filters[column]?.toLowerCase() || '';
-      const rowValue = (row[column]?.toString() || '').toLowerCase();
-      if (!filterValue) return true; // If no filter, return all rows
-      return rowValue.includes(filterValue);
-    });
-  });
+  // const filteredData = formattedData.filter((row) => {
+  //   return Object.keys(filters).every((column) => {
+  //     const filterValue = filters[column]?.toLowerCase() || '';
+  //     const rowValue = (row[column]?.toString() || '').toLowerCase();
+  //     if (!filterValue) return true; // If no filter, return all rows
+  //     return rowValue.includes(filterValue);
+  //   });
+  // });
 
-  if (loading) return <p className='loader' />;
+  // if (loading) return <p className='loader' />;
 
-  if (!formattedData.length) return <p className='message-screen'>Sorry!<br />There's no data available here</p>;
+  // if (!formattedData.length) return <p className='message-screen'>Sorry!<br />There's no data available here</p>;
 
-  // Get table headers from the data keys
-  const headers = Object.keys(formattedData[0]);
+  // // Get table headers from the data keys
+  // const headers = Object.keys(formattedData[0]);
+
+  const [recentData, setRecentData] = useState<any[]>([]);
+  useEffect(() => { getRECENT(setRecentData); }, []);
+  const recentHeaders = recentData.length > 0 ? Object.keys(recentData[0]) : [];
+  console.log("recentData length : ", recentData.length);
 
   return (
     <table id="most-recent">
-      <thead>
+      {/* <thead>
         <tr>
           {headers.map((header) => (
             <th key={header}>
@@ -489,13 +545,34 @@ export const ShowMostRecent = () => {
         </tr>
       </thead>
       <tbody>
-        {filteredData.map((row, index) => (
+         {filteredData.map((row, index) => (
           <tr key={index}>
             {headers.map((header) => (
               <td key={header}>{row[header]}</td>
             ))}
           </tr>
-        ))}
+        ))} */}
+      <thead>
+        <tr>
+          {recentHeaders.map((header) => (
+            <th key={header}>{header.replace(/_/g, ' ')}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {recentData.length > 0 ? (
+          recentData.map((row, index) => (
+            <tr key={index}>
+              {recentHeaders.map((header) => (
+                <td key={header}>{row[header]}</td>
+              ))}
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan={recentHeaders.length || 1}>No recent data available</td>
+          </tr>
+        )}
       </tbody>
     </table>
   );

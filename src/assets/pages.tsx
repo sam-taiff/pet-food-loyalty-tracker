@@ -588,7 +588,7 @@ export const AddPurchaseForm: React.FC<{
             "Bag",
             setAvail_Sizes,
             undefined,
-            "size",
+            "size, unit",
             (query) =>
                 query.match({
                     brand: formData.brand_id,
@@ -745,7 +745,7 @@ export const AddPurchaseForm: React.FC<{
                             Bag Size
                         </option>
                         {avail_sizes.map((avail_size) => (
-                            <option key={avail_size.size}>{avail_size.size}kg</option>
+                            <option key={avail_size.size}>{avail_size.size}{avail_size.unit}</option>
                         ))}
                     </select>
                     <input

@@ -253,37 +253,47 @@ export const CustomerCards: React.FC = () => {
     if (data) {
       // Group data by brand and species
       const grouped = data.reduce((acc, item) => {
-        const groupKey = `${item.brand || 'Unspecified'}|${item.species || 'Unspecified'}`;
+        const groupKey = `${item.brand || 'Unspecified'}|${item.species || ''}`;
         if (!acc[groupKey]) acc[groupKey] = [];
         acc[groupKey].push(item);
         return acc;
       }, {} as { [key: string]: TableData[] });
-
       setGroupedData(grouped);
     }
   }, [data]);
+  console.log("this is the groupedData : ", groupedData);
 
   if (loading) return <p className='loader' />;
 
   return (
     <div id='purchase-groups'>
-      {Object.entries(groupedData).map(([groupKey, purchases]) => (
-        <div key={groupKey} className="purchase-group">
-          <span id='card-title'>
-            <span className="brand">{groupKey.split('|')[0]}</span>
-            <span className="species">{groupKey.split('|')[1]}</span>
-          </span>
-          <div id='purchase-stamps'>
-            {purchases.map((purchase, index) => (
-              <div key={index} className="purchase-stamp">
-                {purchase.date ? <span>{purchase.date}</span> : 'no date'}<br />
-                {purchase.bag || 'no size'}<br />
-                {purchase.staff || 'no staff init.'}
-              </div>
-            ))}
+      {Object.entries(groupedData).map(([groupKey, purchases]) => {
+        // Break purchases into chunks of 10
+        const chunks = purchases.reduce((acc: TableData[][], item, idx) => {
+          const groupIndex = Math.floor(idx / 10);
+          if (!acc[groupIndex]) acc[groupIndex] = [];
+          acc[groupIndex].push(item);
+          return acc;
+        }, []);        
+
+        return chunks.map((chunk, chunkIndex) => (
+          <div key={`${groupKey}-${chunkIndex}`} className="purchase-group">
+            <span id="card-title">
+              <span className="brand">{groupKey.split('|')[0]}</span>
+              <span className="species">{groupKey.split('|')[1]}</span>
+            </span>
+            <div id="purchase-stamps">
+              {chunk.map((purchase, index) => (
+                <div key={index} className="purchase-stamp">
+                  {purchase.date ? <span>{purchase.date}</span> : 'no date'}<br />
+                  {purchase.bag || 'no size'}<br />
+                  {purchase.staff || 'no staff init.'}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ));
+      })}
     </div>
   );
 };

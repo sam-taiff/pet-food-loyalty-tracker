@@ -370,16 +370,17 @@ input {
 #list-view td,
 #list-view th {
   background-color: var(--white);
+  border: none;
 }
 
 #list-view {
   width: 100%;
 }
 
-#list-view td,
+/* #list-view td,
 #list-view th {
   border: 1px solid black;
-}
+} */
 
 #list-view select {
   font: 1.15em "Concert One", Tahoma;

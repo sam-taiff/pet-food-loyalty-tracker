@@ -339,78 +339,51 @@ export const CustomerCards: React.FC = () => {
 export function CustListView() {
   const { customerID } = useParams();
   const [data, setData] = useState<any[]>([]);
-  // const [filteredData, setFilteredData] = useState<any[]>([]);
-  // const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [filters, setFilters] = useState<{ [key: string]: string }>({});
   // const [loading, setLoading] = useState(true);
-
-  //   const custData = getCustData(customerID);
-  // //   useEffect(() => {
-  // //   if (custData) {
-  // //     console.log("This is supposed to be bag data:", custData);
-  // //   }
-  // // }, [custData]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     try {
-  //       await fetch
-  //         ("Purchase", (fetchedData) => {
-  //           const sortedData = fetchedData.sort(
-  //             (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  //           );
-  //           setData(sortedData);
-  //           setLoading(false);
-  //         }, setLoading, "brand_id,date,size,species,staff", (query) => query.eq("customer_id", customerID));
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   if (customerID) fetchData();
-  // }, [customerID]);
-
-  // const formattedData = formatTableData(data, true);
 
   useEffect(() => {
     getCustomerPurchase(customerID, setData)
   }, [customerID])
+  console.log("after fetch : ", data)
 
-  // useEffect(() => {
-  //   const applyFilters = () => {
-  //     const filtered = data.filter((row) =>
-  //       Object.keys(filters).every((key) =>
-  //         filters[key] === "" ? true : row[key] === filters[key]
-  //       )
-  //     );
-  //     setFilteredData(filtered);
-  //   };
+  useEffect(() => {
+    const applyFilters = () => {
+      const filtered = data.filter((row) =>
+        Object.keys(filters).every((key) =>
+          filters[key] === "" ? true : row[key] === filters[key]
+        )
+      );
+      setFilteredData(filtered);
+    };
 
-  //   applyFilters();
-  // }, [filters, data]);
+    applyFilters();
+  }, [filters, data]);
 
-  // const getUniqueValues = useCallback(
-  //   (key: string) => {
-  //     return [...new Set(data.map((item) => item[key]))];
-  //   },
-  //   [data]
-  // );
+  console.log("after apply filters : ", data)
 
-  // const handleFilterChange = (key: string, value: string) => {
-  //   setFilters((prevFilters) => ({ ...prevFilters, [key]: value }));
-  // };
+  const getUniqueValues = useCallback(
+    (key: string) => {
+      return [...new Set(data.map((item) => item[key]))];
+    },
+    [data]
+  );
+
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters((prevFilters) => ({ ...prevFilters, [key]: value }));
+  };
 
   // if (loading) return <p className="loader" />;
 
-  if (data[0] === undefined) {
-    console.log("data is undefined");
-  }
   const [headers, setHeaders] = useState<string[]>([]);
   useEffect(() => {
-      setHeaders(Object.keys(data[0]));
-  }, []);
-  // const headers = Object.keys(data);
+    if (data.length > 0) {
+      setHeaders(Object.keys(filteredData[0]));
+    }
+  }, [data]);
+  // const headers = Object.keys(data[0]);
+  console.log("after headers : ", data)
   console.log("headers : ", headers);
 
   return (
@@ -418,14 +391,14 @@ export function CustListView() {
       <thead>
         <tr>
           {headers.map((header) => (
-            <th key={header}>{header.charAt(0).toUpperCase() + header.slice(1)}
-              {/* <div>
+            <th key={header}>
+              <div>
                 <select
                   value={filters[header] || ""}
                   onChange={(e) => handleFilterChange(header, e.target.value)}
                 >
                   <option value="">
-                    All {header.charAt(0).toUpperCase() + header.slice(1)}
+                    {header.charAt(0).toUpperCase() + header.slice(1)}
                   </option>
                   {getUniqueValues(header).map((value) => (
                     <option key={value} value={value}>
@@ -433,13 +406,13 @@ export function CustListView() {
                     </option>
                   ))}
                 </select>
-              </div> */}
+              </div>
             </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {data.map((row, index) => (
+        {filteredData.map((row, index) => (
           <tr key={index}>
             {headers.map((header) => (
               <td key={header}>{row[header] as string | number}</td>

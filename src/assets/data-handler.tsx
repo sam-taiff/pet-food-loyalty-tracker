@@ -74,12 +74,12 @@ export const getCustomerPurchase = async (customerid: string | undefined, setDat
         customerid: customerid
     });
     if (error) {
-        console.log("customerID from within datahandler is : ", customerid);
+        // console.log("customerID from within datahandler is : ", customerid);
         console.error('Error getting customer purchases:', error);
         setData([]);
     } else {
         // setData(data || []);
         setData(Array.isArray(data) ? data : [data]);
-        console.log('Fetched data:', data);
+        // console.log('Fetched data:', data);
     }
 }

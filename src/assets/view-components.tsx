@@ -237,7 +237,7 @@ export const CustomerCards: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const { customerID } = useParams<{ customerID: string }>();
-  console.log("this is the current customerID : ", customerID);
+  // console.log("this is the current customerID : ", customerID);
 
   useEffect(() => {
     const getCustomerData = async () => {
@@ -341,10 +341,14 @@ export function CustListView() {
   const [data, setData] = useState<any[]>([]);
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getCustomerPurchase(customerID, setData)
+    const getCustomerData = async () => {
+      setLoading(true);
+      await getCustomerPurchase(customerID, setData);
+      setLoading(false);
+    };
   }, [customerID])
   console.log("after fetch : ", data)
 
@@ -374,7 +378,7 @@ export function CustListView() {
     setFilters((prevFilters) => ({ ...prevFilters, [key]: value }));
   };
 
-  // if (loading) return <p className="loader" />;
+  if (loading) return <p className="loader" />;
 
   const [headers, setHeaders] = useState<string[]>([]);
   useEffect(() => {

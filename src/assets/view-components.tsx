@@ -412,10 +412,9 @@ export function CustListView() {
   );
 };
 
-export const useSupabaseSearch = (searchTerm: string, tableName: string) => {
+export const customerSearch = (searchTerm: string) => {
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!searchTerm) {
@@ -423,79 +422,31 @@ export const useSupabaseSearch = (searchTerm: string, tableName: string) => {
       return;
     }
 
-    const search = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const { data, error } = await database
-          .from(tableName)
-          .select("*")
-          .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`);
+    fetch(
+      "Customer", 
+      setResults, 
+      setLoading, 
+      '*', 
+      (query) => (query.or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`))
+    )
 
-        if (error) throw error;
-        setResults(data || []);
-      } catch (err: unknown) {
-        console.error("Query Error:", err);
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unknown error occurred");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+  }, [searchTerm]);
 
-    search();
-  }, [searchTerm, tableName]);
-
-  return { results, loading, error };
+  return { results, loading };
 };
 
 export const ShowMostRecent = () => {
-  // const [data, setData] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(true);
-  // const [custData, setCustData] = useState<TableData[]>([]);
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
 
   const [recentData, setRecentData] = useState<any[]>([]);
-  useEffect(() => { 
+  useEffect(() => {
     getRECENT(setRecentData);
-    setLoading(false); 
+    setLoading(false);
   }, []);
+
   const recentHeaders = recentData.length > 0 ? Object.keys(recentData[0]) : [];
   console.log("recentData length : ", recentData.length);
-
-  // useEffect(() => {
-  //   // Fetch data and sort by the most recent date
-  //   fetch("Purchase", (fetchedData) => {
-  //     const sortedData = fetchedData.sort(
-  //       (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  //     );
-  //     setData(sortedData);
-  //     setLoading(false);
-  //   }, setLoading, "customer_id, brand_id, date, size, species, staff", (query) => query, 100);
-  // }, []);
-
-  // useEffect(() => {
-  //   fetch("Customer", setCustData);
-  // }, []);
-
-  // const mergeCustomerData = () => {
-  //   return data.map((purchase) => {
-  //     const customer = custData.find((cust) => cust.id === purchase.customer_id);
-  //     const { customer_id, ...rest } = purchase;
-  //     return {
-  //       first_name: customer?.first_name,
-  //       last_name: customer?.last_name,
-  //       phone: customer?.phone,
-  //       ...rest,
-  //     };
-  //   });
-  // };
-
-  // const mergedData = mergeCustomerData();
-  // const formattedData = formatTableData(mergedData, true);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>, column: string) => {
     setFilters((prevFilters) => ({
@@ -523,38 +474,8 @@ export const ShowMostRecent = () => {
 
   if (!recentData.length) return <p className='message-screen'>Sorry!<br />There's no data available here</p>;
 
-  // // Get table headers from the data keys
-  // const headers = Object.keys(formattedData[0]);
-
   return (
     <table id="most-recent">
-      {/* <thead>
-        <tr>
-          {headers.map((header) => (
-            <th key={header}>
-              <select
-                value={filters[header] || ''}
-                onChange={(e) => handleFilterChange(e, header)}
-              >
-                <option value="">{header.replace(/_/g, ' ')}</option>
-                {getUniqueValuesForColumn(header).map((value, index) => (
-                  <option key={index} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-         {filteredData.map((row, index) => (
-          <tr key={index}>
-            {headers.map((header) => (
-              <td key={header}>{row[header]}</td>
-            ))}
-          </tr>
-        ))} */}
       <thead>
         <tr>
           {recentHeaders.map((header) => (
@@ -583,19 +504,6 @@ export const ShowMostRecent = () => {
             ))}
           </tr>
         ))}
-        {/* {recentData.length > 0 ? (
-          recentData.map((row, index) => (
-            <tr key={index}>
-              {recentHeaders.map((header) => (
-                <td key={header}>{row[header]}</td>
-              ))}
-            </tr>
-          ))
-        ) : (
-          <tr>
-            <td colSpan={recentHeaders.length || 1}>No recent data available</td>
-          </tr>
-        )} */}
       </tbody>
     </table>
   );

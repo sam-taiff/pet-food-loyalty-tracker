@@ -2,7 +2,7 @@ import '../master.css';
 import logo from './sparrow.png';
 import { createRow, fetch } from './data-handler.tsx';
 import { useNavigate, useParams, Outlet, useHref, useLocation } from 'react-router-dom';
-import { CurrentProfile, CustomerCards, useSupabaseSearch, TableComponent, ShowMostRecent } from './view-components.tsx';
+import { CurrentProfile, CustomerCards, customerSearch, TableComponent, ShowMostRecent } from './view-components.tsx';
 import React, { useEffect, useState, useRef } from 'react';
 import Modal from "react-modal";
 
@@ -64,7 +64,7 @@ export const SearchnResults = () => {
     const [searchTerm, setSearchTerm] = useState<string>(""); // Actual input value
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>(""); // Debounced value
     const [activeIndex, setActiveIndex] = useState<number>(-1); // Track the active result index
-    const { results, loading, error } = useSupabaseSearch(debouncedSearchTerm, "Customer");
+    const { results, loading } = customerSearch(debouncedSearchTerm);
     const navigate = useNavigate();
     const searchRef = useRef<HTMLInputElement>(null);
 
@@ -145,9 +145,8 @@ export const SearchnResults = () => {
                 aria-label="Search input"
             />
             {loading && <p className="loader" />}
-            {error && <p style={{ color: "red" }}>{error}</p>}
             <div id="search-results">
-                {!loading && searchTerm && results.length === 0 ? (
+                {!loading && searchTerm.length > 0 && results.length === 0 ? (
                     <div className="message-screen">
                         This person has yet to start a loyalty card<br />
                         Press <code>enter</code> to create a new customer profile

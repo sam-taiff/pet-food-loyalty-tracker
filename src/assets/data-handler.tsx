@@ -64,3 +64,22 @@ export const getRECENT = async (setData: (data: any[]) => void) => {
         setData(Array.isArray(data) ? data : [data]);
     }
 }
+
+export const getCustomerPurchase = async (customerid: string | undefined, setData: (data: any[]) => void) => {
+    if (!customerid) {
+        console.log("there is no customerID here!");
+        return;
+    }
+    const { data, error } = await database.rpc('get_customer_purchases', {
+        customerid: customerid
+    });
+    if (error) {
+        console.log("customerID from within datahandler is : ", customerid);
+        console.error('Error getting customer purchases:', error);
+        setData([]);
+    } else {
+        // setData(data || []);
+        setData(Array.isArray(data) ? data : [data]);
+        console.log('Fetched data:', data);
+    }
+}

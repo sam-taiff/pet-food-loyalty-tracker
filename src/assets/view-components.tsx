@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback, ChangeEventHandler, ChangeEvent } from 'react';
 import { database } from './client.ts';
-import { fetch, getRECENT } from './data-handler.tsx';
+import { fetch, getCustomerPurchase, getRECENT } from './data-handler.tsx';
 import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 import { useParams } from 'react-router-dom';
 
@@ -24,6 +24,35 @@ export const TableComponent: React.FC<TableProps> = ({ tableName, columns = '*',
   if (loading) return <p className='loader' />;
 
   if (!data.length) return <p className='message-screen'>Sorry!<br />There's no data available here for the table called "{tableName}"</p>;
+
+  // Get table headers from the data keys
+  const headers = Object.keys(data[0]);
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          {headers.map((header) => (
+            <th key={header}>{header}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((row, index) => (
+          <tr key={index}>
+            {headers.map((header) => (
+              <td key={header}>{row[header]}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+
+export const MalTableComponent = (data: any[]) => {
+
+  if (!data.length) return <p className='message-screen'>Sorry!<br />There's no data available here</p>;
 
   // Get table headers from the data keys
   const headers = Object.keys(data[0]);
@@ -203,30 +232,27 @@ function formatTableData(data: Array<{ [key: string]: any }>, withSpaces?: boole
 };
 
 export const CustomerCards: React.FC = () => {
+  const [data, setData] = useState<any[]>();
   const [groupedData, setGroupedData] = useState<{ [key: string]: TableData[] }>({});
   const [loading, setLoading] = useState(true);
 
   const { customerID } = useParams<{ customerID: string }>();
+  console.log("this is the current customerID : ", customerID);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const getCustomerData = async () => {
       setLoading(true);
-      const { data, error } = await database
-        .from('Purchase')
-        .select('date, size, staff, brand_id, species')
-        .eq('customer_id', customerID);
+      await getCustomerPurchase(customerID, setData);
+      setLoading(false);
+    };
 
-      if (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-        return;
-      }
+    if (customerID) getCustomerData();
+  }, [customerID]);
 
-      // Format the date field
-      const formattedData = formatTableData(data);
-
+  useEffect(() => {
+    if (data) {
       // Group data by brand_id and species
-      const grouped = formattedData.reduce((acc, item) => {
+      const grouped = data.reduce((acc, item) => {
         const groupKey = `${item.brand_id || 'Unspecified'}|${item.species || 'Unspecified'}`;
         if (!acc[groupKey]) acc[groupKey] = [];
         acc[groupKey].push(item);
@@ -234,11 +260,8 @@ export const CustomerCards: React.FC = () => {
       }, {} as { [key: string]: TableData[] });
 
       setGroupedData(grouped);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, [customerID]);
+    }
+  }, [data]);
 
   if (loading) return <p className='loader' />;
 
@@ -254,7 +277,7 @@ export const CustomerCards: React.FC = () => {
             {purchases.map((purchase, index) => (
               <div key={index} className="purchase-stamp">
                 {purchase.date ? <span>{purchase.date}</span> : 'no date'}<br />
-                {purchase.size || 'no size'}<br />
+                {purchase.bag || 'no size'}<br />
                 {purchase.staff || 'no staff init.'}
               </div>
             ))}
@@ -265,51 +288,60 @@ export const CustomerCards: React.FC = () => {
   );
 };
 
-function getCustData(customerID: string | undefined) {
-  // const { customerID } = useParams<{ customerID: string }>();
-  const [data, setData] = useState<any[]>([]);
-  const [detData, setDetData] = useState<any[]>([]);
+// const displayCustData = () => {
+//   const { customerID } = useParams<{ customerID: string}>();
+//   const [custData, setCustData] = useState<any[]>([]);
+//   // const [detData, setDetData] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (!customerID) return;
-    fetch("Purchase", (fetchedData) => {
-      const sortedData = fetchedData.sort(
-        (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-      setData(sortedData);
-    }, undefined, "bag_id, date, staff", (query) => query.eq("customer_id", customerID));
-  }, [customerID]);
+//   // useEffect(() => {
+//   //   if (!customerID) return;
+//   //   fetch("Purchase", (fetchedData) => {
+//   //     const sortedData = fetchedData.sort(
+//   //       (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
+//   //     );
+//   //     setData(sortedData);
+//   //   }, undefined, "bag_id, date, staff", (query) => query.eq("customer_id", customerID));
+//   // }, [customerID]);
 
-  const formattedData = formatTableData(data, true);
+//   // const formattedData = formatTableData(data, true);
 
-  useEffect(() => {
-    if (formattedData.length === 0) return; // Prevent unnecessary fetch calls
-    fetch(
-      "Bag",
-      setDetData,
-      undefined,
-      "brand, species, product, size",
-      (query) => query.in("id", formattedData.map((item) => item.bag_id))
-    );
-  }, [formattedData]);
+//   // useEffect(() => {
+//   //   if (formattedData.length === 0) return; // Prevent unnecessary fetch calls
+//   //   fetch(
+//   //     "Bag",
+//   //     setDetData,
+//   //     undefined,
+//   //     "brand, species, product, size",
+//   //     (query) => query.in("id", formattedData.map((item) => item.bag_id))
+//   //   );
+//   // }, [formattedData]);
 
-  useEffect(() => {
-    if (detData.length > 0) {
-      console.log("This is supposed to be bag data:", detData);
-    }
-  }, [detData]);
+//   // useEffect(() => {
+//   //   if (detData.length > 0) {
+//   //     console.log("This is supposed to be bag data:", detData);
+//   //   }
+//   // }, [detData]);
 
-  return (
-    <>hello</>
-  );
-};
+//   // return (
+//   //   <>hello</>
+//   // );
+//   if (!customerID) return;
+
+//   useEffect(() => {
+//     getCustomerPurchase(customerID, setCustData)
+//   }, ["Customer"])
+
+//   return (
+//     <MalTableComponent data={custData}/>
+//   );
+// };
 
 export function CustListView() {
   const { customerID } = useParams();
   const [data, setData] = useState<any[]>([]);
-  const [filteredData, setFilteredData] = useState<any[]>([]);
-  const [filters, setFilters] = useState<{ [key: string]: string }>({});
-  const [loading, setLoading] = useState(true);
+  // const [filteredData, setFilteredData] = useState<any[]>([]);
+  // const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  // const [loading, setLoading] = useState(true);
 
   //   const custData = getCustData(customerID);
   // //   useEffect(() => {
@@ -318,66 +350,76 @@ export function CustListView() {
   // //   }
   // // }, [custData]);
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       await fetch
+  //         ("Purchase", (fetchedData) => {
+  //           const sortedData = fetchedData.sort(
+  //             (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  //           );
+  //           setData(sortedData);
+  //           setLoading(false);
+  //         }, setLoading, "brand_id,date,size,species,staff", (query) => query.eq("customer_id", customerID));
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   if (customerID) fetchData();
+  // }, [customerID]);
+
+  // const formattedData = formatTableData(data, true);
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        await fetch
-          ("Purchase", (fetchedData) => {
-            const sortedData = fetchedData.sort(
-              (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
-            );
-            setData(sortedData);
-            setLoading(false);
-          }, setLoading, "brand_id,date,size,species,staff", (query) => query.eq("customer_id", customerID));
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      }
-    };
+    getCustomerPurchase(customerID, setData)
+  }, [customerID])
 
-    if (customerID) fetchData();
-  }, [customerID]);
+  // useEffect(() => {
+  //   const applyFilters = () => {
+  //     const filtered = data.filter((row) =>
+  //       Object.keys(filters).every((key) =>
+  //         filters[key] === "" ? true : row[key] === filters[key]
+  //       )
+  //     );
+  //     setFilteredData(filtered);
+  //   };
 
-  const formattedData = formatTableData(data, true);
+  //   applyFilters();
+  // }, [filters, data]);
 
+  // const getUniqueValues = useCallback(
+  //   (key: string) => {
+  //     return [...new Set(data.map((item) => item[key]))];
+  //   },
+  //   [data]
+  // );
+
+  // const handleFilterChange = (key: string, value: string) => {
+  //   setFilters((prevFilters) => ({ ...prevFilters, [key]: value }));
+  // };
+
+  // if (loading) return <p className="loader" />;
+
+  if (data[0] === undefined) {
+    console.log("data is undefined");
+  }
+  const [headers, setHeaders] = useState<string[]>([]);
   useEffect(() => {
-    const applyFilters = () => {
-      const filtered = formattedData.filter((row) =>
-        Object.keys(filters).every((key) =>
-          filters[key] === "" ? true : row[key] === filters[key]
-        )
-      );
-      setFilteredData(filtered);
-    };
-
-    applyFilters();
-  }, [filters, formattedData]);
-
-  const getUniqueValues = useCallback(
-    (key: string) => {
-      return [...new Set(formattedData.map((item) => item[key]))];
-    },
-    [formattedData]
-  );
-
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters((prevFilters) => ({ ...prevFilters, [key]: value }));
-  };
-
-  if (loading) return <p className="loader" />;
-
-  const headers = Object.keys(formattedData[0]);
-
-
+      setHeaders(Object.keys(data[0]));
+  }, []);
+  // const headers = Object.keys(data);
+  console.log("headers : ", headers);
 
   return (
     <table id="list-view">
       <thead>
         <tr>
           {headers.map((header) => (
-            <th key={header}>
-              <div>
+            <th key={header}>{header.charAt(0).toUpperCase() + header.slice(1)}
+              {/* <div>
                 <select
                   value={filters[header] || ""}
                   onChange={(e) => handleFilterChange(header, e.target.value)}
@@ -391,22 +433,19 @@ export function CustListView() {
                     </option>
                   ))}
                 </select>
-              </div>
+              </div> */}
             </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {filteredData.map((row, index) => (
+        {data.map((row, index) => (
           <tr key={index}>
             {headers.map((header) => (
               <td key={header}>{row[header] as string | number}</td>
             ))}
           </tr>
         ))}
-        <tr>
-          <td>this is some data : </td>
-        </tr>
       </tbody>
     </table>
   );
@@ -423,11 +462,13 @@ export const customerSearch = (searchTerm: string) => {
     }
 
     fetch(
-      "Customer", 
-      setResults, 
-      setLoading, 
-      '*', 
-      (query) => (query.or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`))
+      "Customer",
+      setResults,
+      setLoading,
+      '*',
+      (query) => (
+        query.or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`)
+      )
     )
 
   }, [searchTerm]);

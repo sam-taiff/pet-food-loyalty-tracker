@@ -251,9 +251,9 @@ export const CustomerCards: React.FC = () => {
 
   useEffect(() => {
     if (data) {
-      // Group data by brand_id and species
+      // Group data by brand and species
       const grouped = data.reduce((acc, item) => {
-        const groupKey = `${item.brand_id || 'Unspecified'}|${item.species || 'Unspecified'}`;
+        const groupKey = `${item.brand || 'Unspecified'}|${item.species || 'Unspecified'}`;
         if (!acc[groupKey]) acc[groupKey] = [];
         acc[groupKey].push(item);
         return acc;
@@ -341,14 +341,12 @@ export function CustListView() {
   const [data, setData] = useState<any[]>([]);
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const getCustomerData = async () => {
-      setLoading(true);
-      await getCustomerPurchase(customerID, setData);
-      setLoading(false);
-    };
+    if (customerID) {
+      getCustomerPurchase(customerID, setData);
+    }
   }, [customerID])
   console.log("after fetch : ", data)
 
@@ -382,8 +380,8 @@ export function CustListView() {
 
   const [headers, setHeaders] = useState<string[]>([]);
   useEffect(() => {
-    if (data.length > 0) {
-      setHeaders(Object.keys(filteredData[0]));
+    if (data != undefined && data.length > 0) {
+      setHeaders(Object.keys(data[0]));
     }
   }, [data]);
   // const headers = Object.keys(data[0]);

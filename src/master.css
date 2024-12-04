@@ -249,38 +249,31 @@ code {
 }
 
 .purchase-group {
-  border: 1px solid var(--baseT);
   padding: 8pt 10pt;
   border-radius: 8pt;
-  /* margin: 0pt 8pt 8pt 0pt; */
-  background-color: var(--white);
-  min-width:fit-content;
-  max-width: 45%;
+  background-color: var(--back1);
+  width: 25%;
+  margin: 1% 0;
 }
 
 .purchase-group #card-title {
   font: small-caps 1.5em "Concert One", sans-serif;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-around;
 }
 
 #purchase-stamps {
   display: flex;
   flex-wrap: wrap;
-  border: 1px solid var(--baseT);
-  min-width: calc((105px*2));
-  max-width: calc(105px*5);
+  justify-content: space-between;
 }
 
-/* #purchase-stamps span {
-  font: small-caps 800 0.85em "JetBrains Mono", monospace;
-} */
-
 .purchase-stamp {
-  border: 1px solid var(--baseT);
-  font: small-caps 700 1em "JetBrains Mono", monospace;
+  background-color: var(--white);
+  font: small-caps 700 0.9em "JetBrains Mono", monospace;
   padding: 8px 10px;
-  width: 83px;
+  margin: 1.5% 0;
+  width: 38%;
 }
 
 #profile {

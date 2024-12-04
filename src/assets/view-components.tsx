@@ -252,13 +252,37 @@ export const CustomerCards: React.FC = () => {
   useEffect(() => {
     if (data) {
       // Group data by brand and species
-      const grouped = data.reduce((acc, item) => {
+      const grouped = (data as TableData[]).reduce((acc: { [key: string]: TableData[] }, item: TableData) => {
         const groupKey = `${item.brand || 'Unspecified'}|${item.species || ''}`;
         if (!acc[groupKey]) acc[groupKey] = [];
         acc[groupKey].push(item);
         return acc;
-      }, {} as { [key: string]: TableData[] });
-      setGroupedData(grouped);
+      }, {});
+
+      // Sort groups by ascending date
+      const sortedAndChunked = Object.entries(grouped).reduce((result: { [key: string]: TableData[] }, [groupKey, purchases]) => {
+        // Sort by date (ascending)
+        const sorted = (purchases as TableData[]).sort((a: TableData, b: TableData) =>
+          new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+
+        // Chunk into groups of 10 and separate incomplete groups
+        const chunks = sorted.reduce((acc: TableData[][], item: TableData, idx: number) => {
+          const groupIndex = Math.floor(idx / 10);
+          if (!acc[groupIndex]) acc[groupIndex] = [];
+          acc[groupIndex].push(item);
+          return acc;
+        }, []);
+
+        // Ensure incomplete chunks come first
+        const incompleteChunks = chunks.filter((chunk: TableData[]) => chunk.length < 10);
+        const completeChunks = chunks.filter((chunk: TableData[]) => chunk.length === 10);
+
+        result[groupKey] = [...incompleteChunks, ...completeChunks].flat(); // Flatten for rendering
+        return result;
+      }, {});
+
+      setGroupedData(sortedAndChunked);
     }
   }, [data]);
   console.log("this is the groupedData : ", groupedData);
@@ -275,24 +299,31 @@ export const CustomerCards: React.FC = () => {
           acc[groupIndex].push(item);
           return acc;
         }, []);
+        return chunks.map((chunk, chunkIndex) => {
+          // Find the minimum bag value in this chunk
+          const minBagValue = Math.min(
+            ...chunk.map(purchase => parseFloat(purchase.bag || 'Infinity'))
+          );
 
-        return chunks.map((chunk, chunkIndex) => (
-          <div key={`${groupKey}-${chunkIndex}`} className="purchase-group">
-            <span id="card-title">
-              <span className="brand">{groupKey.split('|')[0]}</span>
-              <span className="species">{groupKey.split('|')[1]}</span>
-            </span>
-            <div id="purchase-stamps">
-              {chunk.map((purchase, index) => (
-                <div key={index} className="purchase-stamp">
-                  {purchase.date ? <span>{purchase.date}</span> : 'no date'}<br />
-                  {purchase.bag || 'no size'} &nbsp;
-                  {purchase.staff || 'no staff init.'}
-                </div>
-              ))}
+          return (
+            <div key={`${groupKey}-${chunkIndex}`} className="purchase-group">
+              <span id="card-title">
+                <span className="brand">{groupKey.split('|')[0]}</span>
+                <span className="species">{groupKey.split('|')[1]}</span>
+                <span className="min-bag">{isFinite(minBagValue) ? minBagValue + 'kg' : 'N/A'}</span>
+              </span>
+              <div id="purchase-stamps">
+                {chunk.map((purchase, index) => (
+                  <div key={index} className="purchase-stamp">
+                    {purchase.date ? <span>{purchase.date}</span> : 'no date'}<br />
+                    {purchase.bag || 'no size'} &nbsp;
+                    {purchase.staff || 'no staff init.'}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ));
+          );
+        });
       })}
     </div>
   );

@@ -264,7 +264,6 @@ export const Brands = () => {
 export const Database = () => {
     return (
         <div>
-            <span>showing up to 100 entries</span>
             <ShowMostRecent />
         </div>
     );

@@ -216,20 +216,20 @@ export const CurrentProfile: React.FC<ProfileProps> = ({ customerID }) => {
   );
 };
 
-function formatTableData(data: Array<{ [key: string]: any }>, withSpaces?: boolean): Array<{ [key: string]: any }> {
-  if (!data) return [];
-  const spaces = withSpaces ? " " : "";
-  return data.map((item) => ({
-    ...item,
-    date: item.date
-      ? new Intl.DateTimeFormat('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: '2-digit',
-      }).format(new Date(item.date)).replace(/\s+/g, spaces)
-      : null,
-  }));
-};
+// function formatTableData(data: Array<{ [key: string]: any }>, withSpaces?: boolean): Array<{ [key: string]: any }> {
+//   if (!data) return [];
+//   const spaces = withSpaces ? " " : "";
+//   return data.map((item) => ({
+//     ...item,
+//     date: item.date
+//       ? new Intl.DateTimeFormat('en-GB', {
+//         day: '2-digit',
+//         month: 'short',
+//         year: '2-digit',
+//       }).format(new Date(item.date)).replace(/\s+/g, spaces)
+//       : null,
+//   }));
+// };
 
 export const CustomerCards: React.FC = () => {
   const [data, setData] = useState<any[]>();
@@ -274,7 +274,7 @@ export const CustomerCards: React.FC = () => {
           if (!acc[groupIndex]) acc[groupIndex] = [];
           acc[groupIndex].push(item);
           return acc;
-        }, []);        
+        }, []);
 
         return chunks.map((chunk, chunkIndex) => (
           <div key={`${groupKey}-${chunkIndex}`} className="purchase-group">
@@ -286,7 +286,7 @@ export const CustomerCards: React.FC = () => {
               {chunk.map((purchase, index) => (
                 <div key={index} className="purchase-stamp">
                   {purchase.date ? <span>{purchase.date}</span> : 'no date'}<br />
-                  {purchase.bag || 'no size'}<br />
+                  {purchase.bag || 'no size'} &nbsp;
                   {purchase.staff || 'no staff init.'}
                 </div>
               ))}
@@ -503,6 +503,11 @@ export const ShowMostRecent = () => {
   return (
     <table id="most-recent">
       <thead>
+        <tr>
+          <td colSpan={recentHeaders.length} style={{ backgroundColor: 'transparent', fontSize: 'smaller', fontStyle: 'italic' }}>
+            showing up to 100 entries
+          </td>
+        </tr>
         <tr>
           {recentHeaders.map((header) => (
             <th key={header}>

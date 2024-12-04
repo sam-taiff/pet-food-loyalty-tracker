@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Concert+One&family=Open+Sans&family=Oswald:wght@200..700');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 /* Color Scheme 1
 Charcoal: #264653,
 Persian Green: #2a9d8f,
@@ -215,7 +216,8 @@ code {
   }
 }
 
-#allBrands tr, #allBrands {
+#allBrands tr,
+#allBrands {
   border: var(--thickBorder);
   /* border-radius: 50%; */
 }
@@ -252,6 +254,7 @@ code {
   border-radius: 8pt;
   /* margin: 0pt 8pt 8pt 0pt; */
   background-color: var(--white);
+  min-width:fit-content;
   max-width: 45%;
 }
 
@@ -265,20 +268,19 @@ code {
   display: flex;
   flex-wrap: wrap;
   border: 1px solid var(--baseT);
-  min-width: calc(95px*2);
-  max-width: calc(95px*5);
+  min-width: calc((105px*2));
+  max-width: calc(105px*5);
 }
 
-#purchase-stamps span {
-  font: small-caps 500 1.15em "Oswald", sans-serif;
-  line-height: 0;
-}
+/* #purchase-stamps span {
+  font: small-caps 800 0.85em "JetBrains Mono", monospace;
+} */
 
 .purchase-stamp {
   border: 1px solid var(--baseT);
-  font: small-caps 1.05em Tahoma, sans-serif;
-  padding: 8pt 10pt;
-  width: 95px;
+  font: small-caps 700 1em "JetBrains Mono", monospace;
+  padding: 8px 10px;
+  width: 83px;
 }
 
 #profile {
@@ -287,9 +289,9 @@ code {
   justify-content: space-around;
 }
 
-#profile input{
+#profile input {
   font: small-caps 1em "Concert One", sans-serif;
-  width:min-content;
+  width: min-content;
 }
 
 #tab-view,
@@ -340,9 +342,9 @@ input {
   font: 1.25em "Concert One";
 }
 
-#tabs {
-  text-align: left;
-  border-left: var(--thickBorder);
+#tab-pages {
+  border: var(--thickBorder);
+  width: 100%;
 }
 
 #tabs a {
@@ -359,18 +361,16 @@ input {
   background-color: var(--back2);
 }
 
-#tab-pages td,
+/* #tab-pages td,
 #tab-pages tr,
 #tab-pages tbody {
   border: var(--thickBorder);
   background-color: var(--back1);
-}
+} */
 
-#list-view,
-#list-view td,
-#list-view th {
-  background-color: var(--white);
-  border: none;
+#tab {
+  border: var(--thickBorder);
+  background-color: var(--back1);
 }
 
 #list-view {
@@ -381,10 +381,6 @@ input {
 #list-view th {
   border: 1px solid black;
 } */
-
-#list-view select {
-  font: 1.15em "Concert One", Tahoma;
-}
 
 .modal-overlay {
   position: fixed;
@@ -477,11 +473,19 @@ input {
   padding: 5px 0;
 }
 
-#most-recent th {
+#list-view,
+#list-view td,
+#list-view th {
+  border: 3px solid var(--white);
+}
+
+#most-recent th,
+#list-view th {
   background-color: var(--back1);
 }
 
-#most-recent td {
+#most-recent td,
+#list-view td {
   background-color: var(--back2);
 }
 
@@ -491,7 +495,8 @@ input {
   width: max-content;
 }
 
-#most-recent select {
+#most-recent select,
+#list-view select {
   font: small-caps 18pt "Concert One";
   margin: 0;
   text-align: center;
@@ -499,6 +504,7 @@ input {
   border: 0;
 }
 
-#most-recent option {
-  font: 11pt "Concert One", Arial;
+#most-recent option,
+#list-view option {
+  font: 11pt "Concert One", Tahoma;
 }
